@@ -33,17 +33,23 @@ export default function SiteLayout({ data }: { data: SiteData }) {
   const [focusedId, setFocusedId] = useState<string | null>(initialFocus)
 
   // On static pages, searchParams may be empty on first render (hydration) then
-  // populate on the next render. Sync state from URL params when they appear.
+  // populate on the next render. Sync state from URL params once they appear.
   const didSyncRef = useRef(false)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (didSyncRef.current) return
+    // Wait until at least one param is present (searchParams has populated)
     if (!paramPerson && !paramTab && !paramSearch && !paramFocus) return
     didSyncRef.current = true
 
-    if (paramPerson && data.people.includes(paramPerson)) setSelectedPerson(paramPerson)
-    if (paramTab === 'dictionary') setActiveTab('dictionary')
-    if (paramSearch) setSearch(paramSearch)
-    if (paramFocus) setFocusedId(paramFocus)
+    const wantPerson = paramPerson && data.people.includes(paramPerson) ? paramPerson : data.people[0] || 'Jamie'
+    const wantTab: ActiveTab = paramTab === 'dictionary' ? 'dictionary' : 'faq'
+    const wantSearch = paramSearch || ''
+    const wantFocus = paramFocus || null
+
+    setSelectedPerson(wantPerson)
+    setActiveTab(wantTab)
+    setSearch(wantSearch)
+    setFocusedId(wantFocus)
   }, [paramPerson, paramTab, paramSearch, paramFocus, data.people])
 
   // Track the viewport offset of the focused element before a person switch
@@ -51,7 +57,9 @@ export default function SiteLayout({ data }: { data: SiteData }) {
   const urlTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Debounced URL updates to prevent router.replace spam (causes crashes on mobile)
+  // Wait for initial sync before updating URL, otherwise we'd overwrite URL params with defaults
   useEffect(() => {
+    if (!didSyncRef.current && (paramPerson || paramTab || paramSearch || paramFocus)) return
     if (urlTimerRef.current) clearTimeout(urlTimerRef.current)
     urlTimerRef.current = setTimeout(() => {
       try {
@@ -74,7 +82,7 @@ export default function SiteLayout({ data }: { data: SiteData }) {
     return () => {
       if (urlTimerRef.current) clearTimeout(urlTimerRef.current)
     }
-  }, [selectedPerson, activeTab, search, focusedId, data.people, router])
+  }, [selectedPerson, activeTab, search, focusedId, data.people, router, paramPerson, paramTab, paramSearch, paramFocus])
 
   // Scroll to focused element on initial page load (once focusedId is set)
   const didScrollRef = useRef(false)
