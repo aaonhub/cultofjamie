@@ -34,30 +34,41 @@ export default function SiteLayout({ data }: { data: SiteData }) {
 
   // Track the viewport offset of the focused element before a person switch
   const savedOffsetRef = useRef<number | null>(null)
+  const urlTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const updateURL = useCallback(
-    (person: string, tab: ActiveTab, q: string, focus: string | null) => {
-      const params = new URLSearchParams()
-      if (person !== data.people[0]) params.set('person', person)
-      if (tab !== 'faq') params.set('tab', tab)
-      if (q) params.set('q', q)
-      if (focus) params.set('focus', focus)
-      const qs = params.toString()
-      const url = qs ? `?${qs}` : '/'
-      router.replace(url, { scroll: false })
-    },
-    [data.people, router]
-  )
-
+  // Debounced URL updates to prevent router.replace spam (causes crashes on mobile)
   useEffect(() => {
-    updateURL(selectedPerson, activeTab, search, focusedId)
-  }, [selectedPerson, activeTab, search, focusedId, updateURL])
+    if (urlTimerRef.current) clearTimeout(urlTimerRef.current)
+    urlTimerRef.current = setTimeout(() => {
+      try {
+        const params = new URLSearchParams()
+        if (selectedPerson !== data.people[0]) params.set('person', selectedPerson)
+        if (activeTab !== 'faq') params.set('tab', activeTab)
+        if (search) params.set('q', search)
+        if (focusedId) params.set('focus', focusedId)
+        const qs = params.toString()
+        const url = qs ? `?${qs}` : '/'
+        router.replace(url, { scroll: false })
+      } catch {
+        // Silently ignore router errors
+      }
+    }, 300)
+    return () => {
+      if (urlTimerRef.current) clearTimeout(urlTimerRef.current)
+    }
+  }, [selectedPerson, activeTab, search, focusedId, data.people, router])
 
   // Scroll to focused element on initial page load only
   useEffect(() => {
     if (initialFocus) {
-      const el = document.getElementById(initialFocus)
-      if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' })
+      try {
+        const el = document.getElementById(initialFocus)
+        if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' })
+      } catch {
+        // Some mobile browsers don't support instant behavior
+        const el = document.getElementById(initialFocus)
+        if (el) el.scrollIntoView({ block: 'center' })
+      }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -81,11 +92,15 @@ export default function SiteLayout({ data }: { data: SiteData }) {
   // After render from person switch, restore the focused element to the same viewport position
   useLayoutEffect(() => {
     if (focusedId && savedOffsetRef.current !== null) {
-      const el = document.getElementById(focusedId)
-      if (el) {
-        const currentTop = el.getBoundingClientRect().top
-        const drift = currentTop - savedOffsetRef.current
-        window.scrollBy({ top: drift, behavior: 'instant' })
+      try {
+        const el = document.getElementById(focusedId)
+        if (el) {
+          const currentTop = el.getBoundingClientRect().top
+          const drift = currentTop - savedOffsetRef.current
+          window.scrollBy({ top: drift, behavior: 'instant' })
+        }
+      } catch {
+        // Fallback for browsers that don't support instant behavior
       }
       savedOffsetRef.current = null
     }
