@@ -4,18 +4,20 @@ import { Term } from '@/lib/types'
 
 interface DictionaryViewProps {
   terms: Term[]
-  categories: string[]
   selectedPerson: string
   search: string
   onSearchChange: (value: string) => void
+  focusedId: string | null
+  onFocus: (id: string) => void
 }
 
 export default function DictionaryView({
   terms,
-  categories,
   selectedPerson,
   search,
   onSearchChange,
+  focusedId,
+  onFocus,
 }: DictionaryViewProps) {
   const query = search.toLowerCase().trim()
 
@@ -32,13 +34,6 @@ export default function DictionaryView({
     a.name.localeCompare(b.name)
   )
 
-  const groupedByCategory = categories
-    .map((category) => ({
-      category,
-      terms: sortedTerms.filter((t) => t.category === category),
-    }))
-    .filter((group) => group.terms.length > 0)
-
   return (
     <>
       <div className="search-bar">
@@ -50,19 +45,19 @@ export default function DictionaryView({
         />
       </div>
 
-      {groupedByCategory.map(({ category, terms: catTerms }) => (
-        <section key={category}>
-          <h2>{category}</h2>
-          {catTerms.map((term) => (
-            <TermEntry
-              key={term.id}
-              id={term.id}
-              name={term.name}
-              definition={term.definitions[selectedPerson] || ''}
-            />
-          ))}
-        </section>
-      ))}
+      <section>
+        {sortedTerms.map((term) => (
+          <TermEntry
+            key={term.id}
+            id={term.id}
+            name={term.name}
+            definition={term.definitions[selectedPerson] || ''}
+            selectedPerson={selectedPerson}
+            focused={focusedId === term.id}
+            onFocus={onFocus}
+          />
+        ))}
+      </section>
 
       {sortedTerms.length === 0 && query && (
         <p className="no-content">No terms matching &ldquo;{search}&rdquo;</p>
@@ -71,11 +66,32 @@ export default function DictionaryView({
   )
 }
 
-function TermEntry({ id, name, definition }: { id: string; name: string; definition: string }) {
+function TermEntry({
+  id,
+  name,
+  definition,
+  selectedPerson,
+  focused,
+  onFocus,
+}: {
+  id: string
+  name: string
+  definition: string
+  selectedPerson: string
+  focused: boolean
+  onFocus: (id: string) => void
+}) {
   return (
-    <div className="term-entry" id={id}>
+    <div
+      className={`term-entry${focused ? ' entry-focused' : ''}`}
+      id={id}
+      onClick={() => onFocus(id)}
+    >
       <span className="term-name">{name}</span>
-      <span className={`term-definition${!definition ? ' term-empty' : ''}`}>
+      <span
+        key={selectedPerson}
+        className={`term-definition fade-in${!definition ? ' term-empty' : ''}`}
+      >
         {definition || 'No definition yet.'}
       </span>
     </div>

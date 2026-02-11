@@ -1,11 +1,21 @@
 export interface Term {
   id: string
   name: string
-  definition: string
   category: string
+  definitions: Record<string, string>
 }
 
-export interface Dictionary {
-  terms: Term[]
-  categories: string[]
+export interface FAQEntry {
+  id: string
+  question: string
+  answers: Record<string, string>
 }
+
+export interface SiteData {
+  people: string[]
+  categories: string[]
+  terms: Term[]
+  faq: FAQEntry[]
+}
+
+export type Dictionary = SiteData

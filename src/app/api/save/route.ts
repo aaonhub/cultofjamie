@@ -48,9 +48,13 @@ export async function POST(request: NextRequest) {
       sha: string
     }
 
-    if (!dictionary?.terms || !Array.isArray(dictionary.terms)) {
+    if (
+      !dictionary?.terms || !Array.isArray(dictionary.terms) ||
+      !dictionary?.people || !Array.isArray(dictionary.people) ||
+      !Array.isArray(dictionary?.faq)
+    ) {
       return NextResponse.json(
-        { error: 'Invalid dictionary format' },
+        { error: 'Invalid data format' },
         { status: 400 }
       )
     }

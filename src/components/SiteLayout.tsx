@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { SiteData } from '@/lib/types'
 import PersonSidebar from './PersonSidebar'
@@ -16,6 +16,7 @@ export default function SiteLayout({ data }: { data: SiteData }) {
   const paramPerson = searchParams.get('person')
   const paramTab = searchParams.get('tab')
   const paramSearch = searchParams.get('q')
+  const paramFocus = searchParams.get('focus')
 
   const initialPerson =
     paramPerson && data.people.includes(paramPerson)
@@ -24,49 +25,74 @@ export default function SiteLayout({ data }: { data: SiteData }) {
   const initialTab: ActiveTab =
     paramTab === 'faq' ? 'faq' : 'dictionary'
   const initialSearch = paramSearch || ''
+  const initialFocus = paramFocus || null
 
   const [selectedPerson, setSelectedPerson] = useState(initialPerson)
   const [activeTab, setActiveTab] = useState<ActiveTab>(initialTab)
   const [search, setSearch] = useState(initialSearch)
+  const [focusedId, setFocusedId] = useState<string | null>(initialFocus)
+
+  // Track the viewport offset of the focused element before a person switch
+  const savedOffsetRef = useRef<number | null>(null)
 
   const updateURL = useCallback(
-    (person: string, tab: ActiveTab, q: string) => {
+    (person: string, tab: ActiveTab, q: string, focus: string | null) => {
       const params = new URLSearchParams()
       if (person !== data.people[0]) params.set('person', person)
       if (tab !== 'dictionary') params.set('tab', tab)
       if (q) params.set('q', q)
-      const hash = window.location.hash
+      if (focus) params.set('focus', focus)
       const qs = params.toString()
-      const url = qs ? `?${qs}${hash}` : `/${hash}`
+      const url = qs ? `?${qs}` : '/'
       router.replace(url, { scroll: false })
     },
     [data.people, router]
   )
 
-  // Sync state changes to URL
   useEffect(() => {
-    updateURL(selectedPerson, activeTab, search)
-  }, [selectedPerson, activeTab, search, updateURL])
+    updateURL(selectedPerson, activeTab, search, focusedId)
+  }, [selectedPerson, activeTab, search, focusedId, updateURL])
 
-  // Scroll to hash target on initial load
+  // Scroll to focused element on initial page load only
   useEffect(() => {
-    const hash = window.location.hash.slice(1)
-    if (hash) {
-      // Small delay to let the page render first
-      setTimeout(() => {
-        const el = document.getElementById(hash)
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }, 100)
+    if (initialFocus) {
+      const el = document.getElementById(initialFocus)
+      if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' })
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleSelectPerson(person: string) {
+    // Before switching, save where the focused element is on screen
+    if (focusedId) {
+      const el = document.getElementById(focusedId)
+      if (el) {
+        savedOffsetRef.current = el.getBoundingClientRect().top
+      }
+    }
     setSelectedPerson(person)
   }
+
+  // After render from person switch, restore the focused element to the same viewport position
+  useLayoutEffect(() => {
+    if (focusedId && savedOffsetRef.current !== null) {
+      const el = document.getElementById(focusedId)
+      if (el) {
+        const currentTop = el.getBoundingClientRect().top
+        const drift = currentTop - savedOffsetRef.current
+        window.scrollBy({ top: drift, behavior: 'instant' })
+      }
+      savedOffsetRef.current = null
+    }
+  }, [selectedPerson, focusedId])
 
   function handleSelectTab(tab: ActiveTab) {
     setActiveTab(tab)
     setSearch('')
+    setFocusedId(null)
+  }
+
+  function handleFocus(id: string) {
+    setFocusedId(focusedId === id ? null : id)
   }
 
   return (
@@ -96,10 +122,11 @@ export default function SiteLayout({ data }: { data: SiteData }) {
         {activeTab === 'dictionary' ? (
           <DictionaryView
             terms={data.terms}
-            categories={data.categories}
             selectedPerson={selectedPerson}
             search={search}
             onSearchChange={setSearch}
+            focusedId={focusedId}
+            onFocus={handleFocus}
           />
         ) : (
           <FAQView
@@ -107,6 +134,8 @@ export default function SiteLayout({ data }: { data: SiteData }) {
             selectedPerson={selectedPerson}
             search={search}
             onSearchChange={setSearch}
+            focusedId={focusedId}
+            onFocus={handleFocus}
           />
         )}
       </div>

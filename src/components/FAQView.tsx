@@ -7,6 +7,8 @@ interface FAQViewProps {
   selectedPerson: string
   search: string
   onSearchChange: (value: string) => void
+  focusedId: string | null
+  onFocus: (id: string) => void
 }
 
 export default function FAQView({
@@ -14,6 +16,8 @@ export default function FAQView({
   selectedPerson,
   search,
   onSearchChange,
+  focusedId,
+  onFocus,
 }: FAQViewProps) {
   const query = search.toLowerCase().trim()
 
@@ -40,9 +44,17 @@ export default function FAQView({
       {filteredFAQs.map((faq) => {
         const answer = faq.answers[selectedPerson] || ''
         return (
-          <div key={faq.id} id={faq.id} className="faq-entry">
+          <div
+            key={faq.id}
+            id={faq.id}
+            className={`faq-entry${focusedId === faq.id ? ' entry-focused' : ''}`}
+            onClick={() => onFocus(faq.id)}
+          >
             <h3 className="faq-question">{faq.question}</h3>
-            <p className={`faq-answer${!answer ? ' faq-empty' : ''}`}>
+            <p
+              key={selectedPerson}
+              className={`faq-answer fade-in${!answer ? ' faq-empty' : ''}`}
+            >
               {answer || 'No answer yet.'}
             </p>
           </div>

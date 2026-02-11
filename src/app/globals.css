@@ -113,7 +113,7 @@ main {
   font-size: 0.95rem;
   color: var(--color-muted);
   padding: 0.4rem 0.75rem;
-  text-align: left;
+  text-align: center;
   width: 100%;
   border-radius: 4px;
   transition: background 0.15s, color 0.15s;
@@ -159,9 +159,11 @@ main {
 /* Search Bar */
 .search-bar {
   margin-bottom: 1.5rem;
+  cursor: text;
 }
 
 .search-bar input {
+  display: block;
   width: 100%;
   padding: 0.5rem 0.75rem;
   font-family: var(--font-serif);
@@ -171,7 +173,7 @@ main {
   border: 1px solid var(--color-border);
   border-radius: 4px;
   outline: none;
-  transition: border-color 0.15s;
+  cursor: text;
 }
 
 .search-bar input::placeholder {
@@ -198,9 +200,35 @@ h2 {
   font-weight: normal;
 }
 
+/* Focused entry (shared between dictionary + FAQ) */
+.term-entry,
+.faq-entry {
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+  transition: background 0.15s;
+}
+
+.term-entry:hover,
+.faq-entry:hover {
+  background: var(--color-sidebar-hover);
+}
+
+.entry-focused {
+  background: var(--color-sidebar-active);
+  border-left: 3px solid var(--color-text);
+  padding-left: calc(0.75rem - 3px);
+}
+
+.entry-focused:hover {
+  background: var(--color-sidebar-active);
+}
+
 /* Dictionary Term Entries */
 .term-entry {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .term-name {
@@ -225,7 +253,7 @@ h2 {
 
 /* FAQ Entries */
 .faq-entry {
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 .faq-question {
@@ -243,6 +271,16 @@ h2 {
 .faq-empty {
   color: var(--color-muted);
   font-style: italic;
+}
+
+/* Text fade animation when switching people */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.25s ease-out;
 }
 
 /* Empty state */

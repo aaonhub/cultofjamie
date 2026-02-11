@@ -1,18 +1,23 @@
 'use client'
 
 import { useState } from 'react'
-import { Dictionary, Term } from '@/lib/types'
+import { SiteData, Term, FAQEntry } from '@/lib/types'
 import styles from './admin.module.css'
+
+type AdminTab = 'terms' | 'faq' | 'people' | 'categories'
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false)
   const [password, setPassword] = useState('')
-  const [dictionary, setDictionary] = useState<Dictionary | null>(null)
+  const [data, setData] = useState<SiteData | null>(null)
   const [sha, setSha] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [activeTab, setActiveTab] = useState<AdminTab>('terms')
+  const [selectedPerson, setSelectedPerson] = useState('')
 
+  // --- Auth ---
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setError('')
@@ -24,43 +29,45 @@ export default function AdminPage() {
     if (res.ok) {
       setAuthenticated(true)
       setPassword('')
-      loadDictionary()
+      loadData()
     } else {
       setError('Invalid password')
     }
   }
 
-  async function loadDictionary() {
+  async function loadData() {
     const res = await fetch('/api/save')
     if (res.ok) {
-      const data = await res.json()
-      setDictionary(data.dictionary)
-      setSha(data.sha)
+      const result = await res.json()
+      const siteData = result.dictionary as SiteData
+      setData(siteData)
+      setSha(result.sha)
+      if (!selectedPerson && siteData.people.length > 0) {
+        setSelectedPerson(siteData.people[0])
+      }
     } else if (res.status === 401) {
       setAuthenticated(false)
     } else {
-      setError('Failed to load dictionary')
+      setError('Failed to load data')
     }
   }
 
   async function handleSave() {
-    if (!dictionary) return
+    if (!data) return
     setSaving(true)
     setError('')
     setSuccess('')
-
     const res = await fetch('/api/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dictionary, sha }),
+      body: JSON.stringify({ dictionary: data, sha }),
     })
-
     if (res.ok) {
       setSuccess('Saved! Site will rebuild in ~30 seconds.')
-      await loadDictionary()
+      await loadData()
     } else {
-      const data = await res.json()
-      setError(data.error || 'Failed to save')
+      const result = await res.json()
+      setError(result.error || 'Failed to save')
     }
     setSaving(false)
   }
@@ -72,61 +79,130 @@ export default function AdminPage() {
       .replace(/^-|-$/g, '')
   }
 
+  // --- People ---
+  function addPerson(name: string) {
+    if (!data || !name.trim()) return
+    if (data.people.includes(name.trim())) return
+    const updated = { ...data, people: [...data.people, name.trim()] }
+    setData(updated)
+    if (!selectedPerson) setSelectedPerson(name.trim())
+  }
+
+  function removePerson(name: string) {
+    if (!data) return
+    if (!confirm(`Remove "${name}"? Their definitions and FAQ answers will be deleted.`)) return
+    const updated: SiteData = {
+      ...data,
+      people: data.people.filter((p) => p !== name),
+      terms: data.terms.map((t) => {
+        const defs = { ...t.definitions }
+        delete defs[name]
+        return { ...t, definitions: defs }
+      }),
+      faq: data.faq.map((f) => {
+        const ans = { ...f.answers }
+        delete ans[name]
+        return { ...f, answers: ans }
+      }),
+    }
+    setData(updated)
+    if (selectedPerson === name) {
+      setSelectedPerson(updated.people[0] || '')
+    }
+  }
+
+  // --- Terms ---
   function addTerm() {
-    if (!dictionary) return
+    if (!data) return
     const newTerm: Term = {
       id: `new-term-${Date.now()}`,
       name: '',
-      definition: '',
-      category: dictionary.categories[0] || '',
+      category: data.categories[0] || '',
+      definitions: {},
     }
-    setDictionary({
-      ...dictionary,
-      terms: [...dictionary.terms, newTerm],
-    })
+    setData({ ...data, terms: [...data.terms, newTerm] })
   }
 
-  function updateTerm(index: number, field: keyof Term, value: string) {
-    if (!dictionary) return
-    const updated = [...dictionary.terms]
+  function updateTermField(index: number, field: 'name' | 'category', value: string) {
+    if (!data) return
+    const updated = [...data.terms]
     updated[index] = { ...updated[index], [field]: value }
     if (field === 'name') {
       updated[index].id = generateId(value)
     }
-    setDictionary({ ...dictionary, terms: updated })
+    setData({ ...data, terms: updated })
+  }
+
+  function updateTermDefinition(index: number, person: string, value: string) {
+    if (!data) return
+    const updated = [...data.terms]
+    updated[index] = {
+      ...updated[index],
+      definitions: { ...updated[index].definitions, [person]: value },
+    }
+    setData({ ...data, terms: updated })
   }
 
   function deleteTerm(index: number) {
-    if (!dictionary) return
+    if (!data) return
     if (!confirm('Delete this term?')) return
-    const updated = dictionary.terms.filter((_, i) => i !== index)
-    setDictionary({ ...dictionary, terms: updated })
+    setData({ ...data, terms: data.terms.filter((_, i) => i !== index) })
   }
 
-  function addCategory(newCat: string) {
-    if (!dictionary || !newCat.trim()) return
-    if (!dictionary.categories.includes(newCat.trim())) {
-      setDictionary({
-        ...dictionary,
-        categories: [...dictionary.categories, newCat.trim()],
-      })
+  // --- FAQ ---
+  function addFAQ() {
+    if (!data) return
+    const newFAQ: FAQEntry = {
+      id: `faq-${Date.now()}`,
+      question: '',
+      answers: {},
     }
+    setData({ ...data, faq: [...data.faq, newFAQ] })
+  }
+
+  function updateFAQQuestion(index: number, question: string) {
+    if (!data) return
+    const updated = [...data.faq]
+    updated[index] = { ...updated[index], question }
+    updated[index].id = generateId(question || `faq-${Date.now()}`)
+    setData({ ...data, faq: updated })
+  }
+
+  function updateFAQAnswer(index: number, person: string, value: string) {
+    if (!data) return
+    const updated = [...data.faq]
+    updated[index] = {
+      ...updated[index],
+      answers: { ...updated[index].answers, [person]: value },
+    }
+    setData({ ...data, faq: updated })
+  }
+
+  function deleteFAQ(index: number) {
+    if (!data) return
+    if (!confirm('Delete this FAQ?')) return
+    setData({ ...data, faq: data.faq.filter((_, i) => i !== index) })
+  }
+
+  // --- Categories ---
+  function addCategory(name: string) {
+    if (!data || !name.trim()) return
+    if (data.categories.includes(name.trim())) return
+    setData({ ...data, categories: [...data.categories, name.trim()] })
   }
 
   function deleteCategory(cat: string) {
-    if (!dictionary) return
-    const usedBy = dictionary.terms.filter((t) => t.category === cat)
+    if (!data) return
+    const usedBy = data.terms.filter((t) => t.category === cat)
     if (usedBy.length > 0) {
       alert(`Cannot delete "${cat}" — ${usedBy.length} term(s) still use it.`)
       return
     }
     if (!confirm(`Delete category "${cat}"?`)) return
-    setDictionary({
-      ...dictionary,
-      categories: dictionary.categories.filter((c) => c !== cat),
-    })
+    setData({ ...data, categories: data.categories.filter((c) => c !== cat) })
   }
 
+  // --- Login Screen ---
   if (!authenticated) {
     return (
       <div className={styles.container}>
@@ -146,7 +222,7 @@ export default function AdminPage() {
     )
   }
 
-  if (!dictionary) {
+  if (!data) {
     return (
       <div className={styles.container}>
         <p>Loading...</p>
@@ -154,93 +230,215 @@ export default function AdminPage() {
     )
   }
 
+  // --- Main Editor ---
   return (
     <div className={styles.container}>
-      <h1>Dictionary Editor</h1>
+      <h1>Site Editor</h1>
 
       {error && <p className={styles.error}>{error}</p>}
       {success && <p className={styles.success}>{success}</p>}
 
-      <div className={styles.toolbar}>
-        <button onClick={addTerm}>+ Add Term</button>
-        <button onClick={handleSave} disabled={saving}>
+      <div className={styles.adminTabs}>
+        <div className={styles.tabButtons}>
+          {(['terms', 'faq', 'people', 'categories'] as AdminTab[]).map((tab) => (
+            <button
+              key={tab}
+              className={activeTab === tab ? styles.tabActive : styles.tab}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </div>
+        <button
+          className={styles.saveBtn}
+          onClick={handleSave}
+          disabled={saving}
+        >
           {saving ? 'Saving...' : 'Save & Publish'}
         </button>
       </div>
 
-      {dictionary.terms.map((term, index) => (
-        <div key={term.id || index} className={styles.termCard}>
-          <div className={styles.termFields}>
-            <label>
-              Name
-              <input
-                type="text"
-                value={term.name}
-                onChange={(e) => updateTerm(index, 'name', e.target.value)}
-              />
-            </label>
-            <label>
-              Category
-              <select
-                value={term.category}
-                onChange={(e) => updateTerm(index, 'category', e.target.value)}
-              >
-                {dictionary.categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Definition
-              <textarea
-                value={term.definition}
-                onChange={(e) =>
-                  updateTerm(index, 'definition', e.target.value)
-                }
-                rows={3}
-              />
-            </label>
-          </div>
-          <button
-            className={styles.deleteBtn}
-            onClick={() => deleteTerm(index)}
-          >
-            Delete
-          </button>
+      {/* Person selector for Terms and FAQ tabs */}
+      {(activeTab === 'terms' || activeTab === 'faq') && (
+        <div className={styles.personSelect}>
+          <label>
+            Editing as:
+            <select
+              value={selectedPerson}
+              onChange={(e) => setSelectedPerson(e.target.value)}
+            >
+              {data.people.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
-      ))}
+      )}
 
-      <div className={styles.categorySection}>
-        <h2>Manage Categories</h2>
-        <ul>
-          {dictionary.categories.map((cat) => (
-            <li key={cat}>
-              {cat}
+      {/* Terms Tab */}
+      {activeTab === 'terms' && (
+        <div>
+          <div className={styles.toolbar}>
+            <button onClick={addTerm}>+ Add Term</button>
+          </div>
+          {data.terms.map((term, index) => (
+            <div key={term.id || index} className={styles.termCard}>
+              <div className={styles.termFields}>
+                <label>
+                  Name
+                  <input
+                    type="text"
+                    value={term.name}
+                    onChange={(e) => updateTermField(index, 'name', e.target.value)}
+                  />
+                </label>
+                <label>
+                  Category
+                  <select
+                    value={term.category}
+                    onChange={(e) => updateTermField(index, 'category', e.target.value)}
+                  >
+                    {data.categories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  {selectedPerson}&apos;s definition
+                  <textarea
+                    value={term.definitions[selectedPerson] || ''}
+                    onChange={(e) =>
+                      updateTermDefinition(index, selectedPerson, e.target.value)
+                    }
+                    rows={3}
+                    placeholder={`${selectedPerson}'s definition for ${term.name || 'this term'}...`}
+                  />
+                </label>
+              </div>
               <button
-                className={styles.deleteCatBtn}
-                onClick={() => deleteCategory(cat)}
+                className={styles.deleteBtn}
+                onClick={() => deleteTerm(index)}
               >
-                &times;
+                Delete
               </button>
-            </li>
+            </div>
           ))}
-        </ul>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            const input = (e.target as HTMLFormElement).elements.namedItem(
-              'newCat'
-            ) as HTMLInputElement
-            addCategory(input.value)
-            input.value = ''
-          }}
-        >
-          <input name="newCat" type="text" placeholder="New category name" />
-          <button type="submit">Add Category</button>
-        </form>
-      </div>
+        </div>
+      )}
+
+      {/* FAQ Tab */}
+      {activeTab === 'faq' && (
+        <div>
+          <div className={styles.toolbar}>
+            <button onClick={addFAQ}>+ Add Question</button>
+          </div>
+          {data.faq.map((faq, index) => (
+            <div key={faq.id || index} className={styles.termCard}>
+              <div className={styles.termFields}>
+                <label>
+                  Question
+                  <input
+                    type="text"
+                    value={faq.question}
+                    onChange={(e) => updateFAQQuestion(index, e.target.value)}
+                  />
+                </label>
+                <label>
+                  {selectedPerson}&apos;s answer
+                  <textarea
+                    value={faq.answers[selectedPerson] || ''}
+                    onChange={(e) =>
+                      updateFAQAnswer(index, selectedPerson, e.target.value)
+                    }
+                    rows={4}
+                    placeholder={`${selectedPerson}'s answer...`}
+                  />
+                </label>
+              </div>
+              <button
+                className={styles.deleteBtn}
+                onClick={() => deleteFAQ(index)}
+              >
+                Delete
+              </button>
+            </div>
+          ))}
+          {data.faq.length === 0 && (
+            <p className={styles.emptyState}>
+              No FAQ questions yet. Click &quot;+ Add Question&quot; to create one.
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* People Tab */}
+      {activeTab === 'people' && (
+        <div className={styles.categorySection}>
+          <ul>
+            {data.people.map((person) => (
+              <li key={person}>
+                {person}
+                <button
+                  className={styles.deleteCatBtn}
+                  onClick={() => removePerson(person)}
+                >
+                  &times;
+                </button>
+              </li>
+            ))}
+          </ul>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              const input = (e.target as HTMLFormElement).elements.namedItem(
+                'newPerson'
+              ) as HTMLInputElement
+              addPerson(input.value)
+              input.value = ''
+            }}
+          >
+            <input name="newPerson" type="text" placeholder="New person name" />
+            <button type="submit">Add Person</button>
+          </form>
+        </div>
+      )}
+
+      {/* Categories Tab */}
+      {activeTab === 'categories' && (
+        <div className={styles.categorySection}>
+          <ul>
+            {data.categories.map((cat) => (
+              <li key={cat}>
+                {cat}
+                <button
+                  className={styles.deleteCatBtn}
+                  onClick={() => deleteCategory(cat)}
+                >
+                  &times;
+                </button>
+              </li>
+            ))}
+          </ul>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              const input = (e.target as HTMLFormElement).elements.namedItem(
+                'newCat'
+              ) as HTMLInputElement
+              addCategory(input.value)
+              input.value = ''
+            }}
+          >
+            <input name="newCat" type="text" placeholder="New category name" />
+            <button type="submit">Add Category</button>
+          </form>
+        </div>
+      )}
     </div>
   )
 }

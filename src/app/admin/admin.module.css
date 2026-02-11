@@ -9,6 +9,7 @@
   margin-bottom: 1rem;
 }
 
+/* Login */
 .loginForm {
   display: flex;
   gap: 0.5rem;
@@ -23,7 +24,100 @@
   max-width: 300px;
 }
 
-.loginForm button,
+.loginForm button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+}
+
+.loginForm button:hover {
+  background: #333;
+}
+
+/* Admin Tabs */
+.adminTabs {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tabButtons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.tab,
+.tabActive {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: #888;
+  border-radius: 4px;
+}
+
+.tab:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.tabActive {
+  color: #1a1a1a;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.saveBtn {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+}
+
+.saveBtn:hover {
+  background: #333;
+}
+
+.saveBtn:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+/* Person Selector */
+.personSelect {
+  margin-bottom: 1rem;
+  padding: 0.75rem 0;
+}
+
+.personSelect label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.personSelect select {
+  padding: 0.4rem 0.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+}
+
+/* Toolbar (+ Add buttons) */
+.toolbar {
+  margin-bottom: 1rem;
+}
+
 .toolbar button {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
@@ -33,24 +127,11 @@
   border: none;
 }
 
-.loginForm button:hover,
 .toolbar button:hover {
   background: #333;
 }
 
-.toolbar button:disabled {
-  background: #999;
-  cursor: not-allowed;
-}
-
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid #e0e0e0;
-}
-
+/* Term / FAQ Cards */
 .termCard {
   border: 1px solid #e0e0e0;
   padding: 1rem;
@@ -101,15 +182,9 @@
   text-decoration: underline;
 }
 
+/* People / Categories Section */
 .categorySection {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e0e0e0;
-}
-
-.categorySection h2 {
-  font-size: 1.1rem;
-  margin-bottom: 0.75rem;
+  margin-top: 1rem;
 }
 
 .categorySection ul {
@@ -122,7 +197,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.25rem 0;
+  padding: 0.35rem 0;
+  font-size: 0.95rem;
 }
 
 .deleteCatBtn {
@@ -155,6 +231,14 @@
   font-size: 0.85rem;
 }
 
+/* Empty state */
+.emptyState {
+  color: #888;
+  font-style: italic;
+  padding: 2rem 0;
+}
+
+/* Status messages */
 .error {
   color: #c00;
   margin-top: 0.5rem;
@@ -165,4 +249,72 @@
   color: #070;
   margin-top: 0.5rem;
   font-size: 0.9rem;
+}
+
+/* Dark mode */
+:global(html.dark) .container {
+  color: #e0e0e0;
+}
+
+:global(html.dark) .loginForm input,
+:global(html.dark) .termFields input,
+:global(html.dark) .termFields select,
+:global(html.dark) .termFields textarea,
+:global(html.dark) .categorySection input,
+:global(html.dark) .personSelect select {
+  background: #1a1a1a;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+:global(html.dark) .loginForm button,
+:global(html.dark) .toolbar button,
+:global(html.dark) .categorySection form button,
+:global(html.dark) .saveBtn {
+  background: #e0e0e0;
+  color: #111;
+}
+
+:global(html.dark) .loginForm button:hover,
+:global(html.dark) .toolbar button:hover,
+:global(html.dark) .saveBtn:hover {
+  background: #ccc;
+}
+
+:global(html.dark) .adminTabs {
+  border-bottom-color: #333;
+}
+
+:global(html.dark) .tab {
+  color: #888;
+}
+
+:global(html.dark) .tab:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+:global(html.dark) .tabActive {
+  color: #e0e0e0;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+:global(html.dark) .termCard {
+  border-color: #333;
+}
+
+:global(html.dark) .deleteBtn,
+:global(html.dark) .deleteCatBtn {
+  color: #f55;
+}
+
+:global(html.dark) .error {
+  color: #f55;
+}
+
+:global(html.dark) .success {
+  color: #4c4;
+}
+
+:global(html.dark) .emptyState {
+  color: #777;
 }
