@@ -6,7 +6,6 @@ interface FAQViewProps {
   faqEntries: FAQEntry[]
   selectedPerson: string
   search: string
-  onSearchChange: (value: string) => void
   focusedId: string | null
   onFocus: (id: string) => void
 }
@@ -15,7 +14,6 @@ export default function FAQView({
   faqEntries,
   selectedPerson,
   search,
-  onSearchChange,
   focusedId,
   onFocus,
 }: FAQViewProps) {
@@ -32,19 +30,6 @@ export default function FAQView({
 
   return (
     <div className="faq-content">
-      <label className="search-bar">
-        <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-        <input
-          type="text"
-          placeholder="Search questions..."
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
-      </label>
-
       {filteredFAQs.map((faq) => {
         const answer = faq.answers[selectedPerson] || ''
         return (
