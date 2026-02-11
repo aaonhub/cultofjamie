@@ -1,9 +1,14 @@
-import { getDictionary } from '@/lib/dictionary'
-import DictionaryView from '@/components/DictionaryView'
+import { Suspense } from 'react'
+import { getSiteData } from '@/lib/dictionary'
+import SiteLayout from '@/components/SiteLayout'
 
 export const dynamic = 'force-static'
 
 export default function HomePage() {
-  const dictionary = getDictionary()
-  return <DictionaryView dictionary={dictionary} />
+  const data = getSiteData()
+  return (
+    <Suspense>
+      <SiteLayout data={data} />
+    </Suspense>
+  )
 }

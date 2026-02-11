@@ -1,16 +1,20 @@
 'use client'
 
-import { useState } from 'react'
 import { FAQEntry } from '@/lib/types'
 
 interface FAQViewProps {
   faqEntries: FAQEntry[]
   selectedPerson: string
+  search: string
+  onSearchChange: (value: string) => void
 }
 
-export default function FAQView({ faqEntries, selectedPerson }: FAQViewProps) {
-  const [search, setSearch] = useState('')
-
+export default function FAQView({
+  faqEntries,
+  selectedPerson,
+  search,
+  onSearchChange,
+}: FAQViewProps) {
   const query = search.toLowerCase().trim()
 
   const filteredFAQs = faqEntries.filter((faq) => {
@@ -29,14 +33,14 @@ export default function FAQView({ faqEntries, selectedPerson }: FAQViewProps) {
           type="text"
           placeholder="Search questions..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
 
       {filteredFAQs.map((faq) => {
         const answer = faq.answers[selectedPerson] || ''
         return (
-          <div key={faq.id} className="faq-entry">
+          <div key={faq.id} id={faq.id} className="faq-entry">
             <h3 className="faq-question">{faq.question}</h3>
             <p className={`faq-answer${!answer ? ' faq-empty' : ''}`}>
               {answer || 'No answer yet.'}

@@ -1,21 +1,22 @@
 'use client'
 
-import { useState } from 'react'
 import { Term } from '@/lib/types'
 
 interface DictionaryViewProps {
   terms: Term[]
   categories: string[]
   selectedPerson: string
+  search: string
+  onSearchChange: (value: string) => void
 }
 
 export default function DictionaryView({
   terms,
   categories,
   selectedPerson,
+  search,
+  onSearchChange,
 }: DictionaryViewProps) {
-  const [search, setSearch] = useState('')
-
   const query = search.toLowerCase().trim()
 
   const filteredTerms = terms.filter((t) => {
@@ -45,7 +46,7 @@ export default function DictionaryView({
           type="text"
           placeholder="Search terms..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
 
@@ -55,6 +56,7 @@ export default function DictionaryView({
           {catTerms.map((term) => (
             <TermEntry
               key={term.id}
+              id={term.id}
               name={term.name}
               definition={term.definitions[selectedPerson] || ''}
             />
@@ -69,9 +71,9 @@ export default function DictionaryView({
   )
 }
 
-function TermEntry({ name, definition }: { name: string; definition: string }) {
+function TermEntry({ id, name, definition }: { id: string; name: string; definition: string }) {
   return (
-    <div className="term-entry">
+    <div className="term-entry" id={id}>
       <span className="term-name">{name}</span>
       <span className={`term-definition${!definition ? ' term-empty' : ''}`}>
         {definition || 'No definition yet.'}
