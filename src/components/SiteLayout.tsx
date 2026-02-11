@@ -48,6 +48,10 @@ export default function SiteLayout({ data }: { data: SiteData }) {
         if (focusedId) params.set('focus', focusedId)
         const qs = params.toString()
         const url = qs ? `?${qs}` : '/'
+        // Skip if URL already matches to prevent re-render loop
+        const current = window.location.search || '/'
+        const currentNorm = current === '?' ? '/' : current
+        if (currentNorm === url) return
         router.replace(url, { scroll: false })
       } catch {
         // Silently ignore router errors
