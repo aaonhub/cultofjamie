@@ -13,24 +13,27 @@ export default function SiteLayout({ data }: { data: SiteData }) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const paramPerson = searchParams.get('person')
-  const paramTab = searchParams.get('tab')
-  const paramSearch = searchParams.get('q')
-  const paramFocus = searchParams.get('focus')
+  const [selectedPerson, setSelectedPerson] = useState(data.people[0] || 'Jamie')
+  const [activeTab, setActiveTab] = useState<ActiveTab>('faq')
+  const [search, setSearch] = useState('')
+  const [focusedId, setFocusedId] = useState<string | null>(null)
+  const hydratedRef = useRef(false)
 
-  const initialPerson =
-    paramPerson && data.people.includes(paramPerson)
-      ? paramPerson
-      : data.people[0] || 'Jamie'
-  const initialTab: ActiveTab =
-    paramTab === 'dictionary' ? 'dictionary' : 'faq'
-  const initialSearch = paramSearch || ''
-  const initialFocus = paramFocus || null
+  // Sync state from URL params after hydration to avoid mismatch
+  useEffect(() => {
+    if (hydratedRef.current) return
+    hydratedRef.current = true
 
-  const [selectedPerson, setSelectedPerson] = useState(initialPerson)
-  const [activeTab, setActiveTab] = useState<ActiveTab>(initialTab)
-  const [search, setSearch] = useState(initialSearch)
-  const [focusedId, setFocusedId] = useState<string | null>(initialFocus)
+    const paramPerson = searchParams.get('person')
+    const paramTab = searchParams.get('tab')
+    const paramSearch = searchParams.get('q')
+    const paramFocus = searchParams.get('focus')
+
+    if (paramPerson && data.people.includes(paramPerson)) setSelectedPerson(paramPerson)
+    if (paramTab === 'dictionary') setActiveTab('dictionary')
+    if (paramSearch) setSearch(paramSearch)
+    if (paramFocus) setFocusedId(paramFocus)
+  }, [searchParams, data.people])
 
   // Track the viewport offset of the focused element before a person switch
   const savedOffsetRef = useRef<number | null>(null)
@@ -60,15 +63,18 @@ export default function SiteLayout({ data }: { data: SiteData }) {
 
   // Scroll to focused element on initial page load only
   useEffect(() => {
-    if (initialFocus) {
-      try {
-        const el = document.getElementById(initialFocus)
-        if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' })
-      } catch {
-        // Some mobile browsers don't support instant behavior
-        const el = document.getElementById(initialFocus)
-        if (el) el.scrollIntoView({ block: 'center' })
-      }
+    const paramFocus = searchParams.get('focus')
+    if (paramFocus) {
+      // Small delay to let hydration state sync render
+      requestAnimationFrame(() => {
+        try {
+          const el = document.getElementById(paramFocus)
+          if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' })
+        } catch {
+          const el = document.getElementById(paramFocus)
+          if (el) el.scrollIntoView({ block: 'center' })
+        }
+      })
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -147,7 +153,7 @@ export default function SiteLayout({ data }: { data: SiteData }) {
           </svg>
           <input
             type="text"
-            placeholder={activeTab === 'dictionary' ? 'Search terms...' : 'Search questions...'}
+            placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
