@@ -186,17 +186,24 @@
       }
     },
     {
-      "id": "would-you-force-sr-on-others",
-      "question": "Would you force self-realization on others if you could?",
+      "id": "what-triggered-your-sr",
+      "question": "What triggered your self-realization?",
       "answers": {
-        "Jamie": "Yes I'd push the button. This is only in terms of assuming they themselves would actually then be self-realized and \"get it\". In a very basic sense, self-realization is the cessation of emotional relationship to self-imagination. If self-imagination is causing someone to have negative feelings towards self-realization, this would itself be resolved by self-realization. You are really asking me \"hey Jamie, if you could stop nightmares, but the people having nightmares don't want you to, would you do it?\" the answer is yes, because the people experiencing nightmares only want to experience nightmares because they erroneously think there is value to them. The moment they actually understand themselves why nightmares are absolutely useless and nightmares stop, they instantly realize \"oops, that was stupid\"."
+        "Jamie": "The phrase itself makes perfect sense and is a great 'meditation', but at the time I didn't understand it conceptually at all as it was completely new, I was just talking to myself and thinking and it came out, but it triggered the physical event, and afterwards it made complete sense in hindsight. It felt more like someone saying \"look, there's the moon\" and consciously I was like \"ooooh...moon\" but your brain is like \"ok that's it we're becoming an astronaut but he'll learn that info later\". Not like there is secret info, but it felt like your own conscious knowledge is extremely low level, but that small insight was enough to trigger a much deeper and more intelligent brain structure to click and become aware of something."
       }
     },
     {
-      "id": "what-is-loneliness",
-      "question": "What is loneliness?",
+      "id": "does-sr-happen-all-at-once-or-gradually",
+      "question": "Does self-realization happen all at once or gradually?",
       "answers": {
-        "Jamie": "Straightforwardly, loneliness is the desire for meaningful companionship, it is - importantly - not the lack of relationship. You are lonely when you want something, not when you hypothetically lack something."
+        "Jamie": "He is completely correct: self-realization is an instantaneous and permanent event that is realized now and happens now and then persists for every now that is experienced. What he means and what I mean is that there is absolutely no other time that things occur. This is tremendously hard to reconcile because we view our lives as an 80+ year monolith of information. You have years and years of childhood and years and years of future life you will experience. I am saying, and he is saying, that you don't. You have exactly present perception. This includes present memory, which is those other things. You have present perception, which includes present memory. Present memory is your past and your projected imagination of the future."
+      }
+    },
+    {
+      "id": "do-you-still-experience-stress",
+      "question": "Do you still experience stress or emotions after self-realization?",
+      "answers": {
+        "Jamie": "There isn't an emotional relationship to an idea of presenting or what anyone is saying, but there is a focus/tension in relationship to the actual event as it's happening. Like there is a \"stress\" that I experience in the same way that asking someone out I'd probably be nervous. This isn't accompanied by anxiety or an emotion, but is a tense physical event containing uncertainty that you have to pay a lot of attention to because you perceive it as consequential/important. While in this particular case there isn't any emotional characteristic, it's not like you never experience emotions, it's that emotions occur when they are necessary in response to events that are currently happening, not towards imagined outcomes or events."
       }
     },
     {
@@ -204,6 +211,13 @@
       "question": "Is there a self?",
       "answers": {
         "Jamie": "I think that what you are looking at is really insightful and very accurate. The only thing I'd add on afterwards is saying \"is there even that 'Me' at the end of the search?\" Is there definitively anything at all at the end of the road you call yourself?"
+      }
+    },
+    {
+      "id": "what-is-loneliness",
+      "question": "What is loneliness?",
+      "answers": {
+        "Jamie": "Straightforwardly, loneliness is the desire for meaningful companionship, it is - importantly - not the lack of relationship. You are lonely when you want something, not when you hypothetically lack something."
       }
     },
     {
@@ -221,13 +235,6 @@
       }
     },
     {
-      "id": "do-you-still-experience-stress",
-      "question": "Do you still experience stress or emotions after self-realization?",
-      "answers": {
-        "Jamie": "There isn't an emotional relationship to an idea of presenting or what anyone is saying, but there is a focus/tension in relationship to the actual event as it's happening. Like there is a \"stress\" that I experience in the same way that asking someone out I'd probably be nervous. This isn't accompanied by anxiety or an emotion, but is a tense physical event containing uncertainty that you have to pay a lot of attention to because you perceive it as consequential/important. While in this particular case there isn't any emotional characteristic, it's not like you never experience emotions, it's that emotions occur when they are necessary in response to events that are currently happening, not towards imagined outcomes or events."
-      }
-    },
-    {
       "id": "does-understanding-evolve-after-sr",
       "question": "Does understanding continue to evolve after self-realization?",
       "answers": {
@@ -239,13 +246,6 @@
       "question": "Why don't you need a self-image?",
       "answers": {
         "Jamie": "The reason you don't need a self-image is because you don't need to imagine who you are. You are experiencing what you are every single moment of your life right now."
-      }
-    },
-    {
-      "id": "does-sr-happen-all-at-once-or-gradually",
-      "question": "Does self-realization happen all at once or gradually?",
-      "answers": {
-        "Jamie": "He is completely correct: self-realization is an instantaneous and permanent event that is realized now and happens now and then persists for every now that is experienced. What he means and what I mean is that there is absolutely no other time that things occur. This is tremendously hard to reconcile because we view our lives as an 80+ year monolith of information. You have years and years of childhood and years and years of future life you will experience. I am saying, and he is saying, that you don't. You have exactly present perception. This includes present memory, which is those other things. You have present perception, which includes present memory. Present memory is your past and your projected imagination of the future."
       }
     },
     {
@@ -281,20 +281,6 @@
       "question": "Is ambition bad?",
       "answers": {
         "Jamie": "The beliefs an individual has don't make everything make sense, they try to make sense of things through forcing a relationship of \"I am not sufficient\" ----> \"my current experience\" -----> \"rectifying insufficiency with perfect solution\". An example with your mention of the need to be successful is not that there's anything wrong with being an athlete, or being a movie star, or being a successful business person, the only problem is the ongoing algorithmic brain function that operates constantly demanding it, which is ambition, anxiety, restlessness, and anger at your own failure to live up to your \"imagined\" solution to the problem. The problem in this case being not that you couldn't make more money or be in better shape and that would be cool, it is the artificial demand that has been invented by the brain that believes it is \"fixing\" something in time when it isn't."
-      }
-    },
-    {
-      "id": "what-triggered-your-sr",
-      "question": "What triggered your self-realization?",
-      "answers": {
-        "Jamie": "The phrase itself makes perfect sense and is a great 'meditation', but at the time I didn't understand it conceptually at all as it was completely new, I was just talking to myself and thinking and it came out, but it triggered the physical event, and afterwards it made complete sense in hindsight. It felt more like someone saying \"look, there's the moon\" and consciously I was like \"ooooh...moon\" but your brain is like \"ok that's it we're becoming an astronaut but he'll learn that info later\". Not like there is secret info, but it felt like your own conscious knowledge is extremely low level, but that small insight was enough to trigger a much deeper and more intelligent brain structure to click and become aware of something."
-      }
-    },
-    {
-      "id": "thoughts-on-dr-k",
-      "question": "What are your thoughts on Dr. K (HealthyGamerGG)?",
-      "answers": {
-        "Jamie": "I think he's a great resource especially from his non-spiritual views. His spiritual views are mostly Buddhist or Hindu religious theory, which is cool with me, but kind of like listening to a really smart Christian theologist telling you the lessons of Christ through the bible and you're like \"yeah pretty smart I guess\". The reality is the interpretation is coming from their own human intuition, intelligence and experience reacting and trying to interpret the knowledge and that's what you're resonating with. He doesn't exactly strike me as a self-realized person, but I think he has tremendous insight on incremental improvement through therapy and his psychological and behavioral insights and knows way more than me about what will be effective there. Huge respect to him and what his efforts are towards. I listen to him sometimes and think he's kinda like Alan Watts if I had to compare, but his own more psychologically educated version."
       }
     },
     {
