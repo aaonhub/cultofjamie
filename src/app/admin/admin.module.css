@@ -284,6 +284,40 @@
   border-color: #b5b0a8;
 }
 
+.cardDirty {
+  border-color: #c9a96e;
+}
+
+/* Per-card save button */
+.cardSaveBtn {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.7rem;
+  font-family: inherit;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  cursor: default;
+  background: #ddd5c8;
+  color: #8a8278;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cardSaveBtnDirty {
+  background: #3a3530;
+  color: #f5f0e8;
+  cursor: pointer;
+}
+
+.cardSaveBtnDirty:hover {
+  background: #524d46;
+}
+
+.cardSaveBtnSaved {
+  background: #5a9a4a;
+  color: #fff;
+}
+
 /* Card header — clickable row */
 .cardHeader {
   display: flex;
@@ -664,6 +698,29 @@
 :global(html.dark) .card:hover,
 :global(html.dark) .cardExpanded {
   border-color: #555;
+}
+
+:global(html.dark) .cardDirty {
+  border-color: #8a7a4a;
+}
+
+:global(html.dark) .cardSaveBtn {
+  background: #333;
+  color: #888;
+}
+
+:global(html.dark) .cardSaveBtnDirty {
+  background: #e0e0e0;
+  color: #111;
+}
+
+:global(html.dark) .cardSaveBtnDirty:hover {
+  background: #ccc;
+}
+
+:global(html.dark) .cardSaveBtnSaved {
+  background: #4a8a3a;
+  color: #fff;
 }
 
 :global(html.dark) .cardHeader:hover {

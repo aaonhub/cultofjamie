@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { SiteData, Term, FAQEntry } from '@/lib/types'
 import styles from './admin.module.css'
 
@@ -10,16 +10,17 @@ export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false)
   const [password, setPassword] = useState('')
   const [data, setData] = useState<SiteData | null>(null)
+  const [originalData, setOriginalData] = useState<SiteData | null>(null)
   const [sha, setSha] = useState('')
-  const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
   const [activeTab, setActiveTab] = useState<AdminTab>('faq')
   const [selectedPerson, setSelectedPerson] = useState('')
   const [authenticatedPerson, setAuthenticatedPerson] = useState('')
   const [role, setRole] = useState<'master' | 'person'>('person')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [adminSearch, setAdminSearch] = useState('')
+  const [savingIds, setSavingIds] = useState<Set<string>>(new Set())
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
 
   const isMaster = role === 'master'
 
@@ -42,6 +43,58 @@ export default function AdminPage() {
   ) {
     updater(e.target.value)
     autoResize(e.target)
+  }
+
+  // --- Dirty checking ---
+  function isTermDirty(termId: string): boolean {
+    if (!data || !originalData) return false
+    const current = data.terms.find(t => t.id === termId)
+    const original = originalData.terms.find(t => t.id === termId)
+    if (!original) return true // new term
+    if (!current) return false
+    if (current.name !== original.name) return true
+    const allPeople = new Set([...Object.keys(current.definitions), ...Object.keys(original.definitions)])
+    for (const p of allPeople) {
+      if ((current.definitions[p] || '') !== (original.definitions[p] || '')) return true
+    }
+    return false
+  }
+
+  function isFAQDirty(faqId: string): boolean {
+    if (!data || !originalData) return false
+    const current = data.faq.find(f => f.id === faqId)
+    const original = originalData.faq.find(f => f.id === faqId)
+    if (!original) return true // new FAQ
+    if (!current) return false
+    if (current.question !== original.question) return true
+    const allPeople = new Set([...Object.keys(current.answers), ...Object.keys(original.answers)])
+    for (const p of allPeople) {
+      if ((current.answers[p] || '') !== (original.answers[p] || '')) return true
+    }
+    return false
+  }
+
+  function isPeopleDirty(): boolean {
+    if (!data || !originalData) return false
+    if (data.people.length !== originalData.people.length) return true
+    return data.people.some((p, i) => p !== originalData.people[i])
+  }
+
+  function hasAnyChanges(): boolean {
+    if (!data || !originalData) return false
+    if (isPeopleDirty()) return true
+    if (data.terms.length !== originalData.terms.length) return true
+    if (data.faq.length !== originalData.faq.length) return true
+    // Check order changes
+    if (data.terms.some((t, i) => t.id !== originalData.terms[i]?.id)) return true
+    if (data.faq.some((f, i) => f.id !== originalData.faq[i]?.id)) return true
+    for (const t of data.terms) {
+      if (isTermDirty(t.id)) return true
+    }
+    for (const f of data.faq) {
+      if (isFAQDirty(f.id)) return true
+    }
+    return false
   }
 
   // --- Auth ---
@@ -71,12 +124,15 @@ export default function AdminPage() {
   function handleLogout() {
     setAuthenticated(false)
     setData(null)
+    setOriginalData(null)
     setSha('')
     setAuthenticatedPerson('')
     setRole('person')
     setSelectedPerson('')
     setExpandedId(null)
     setAdminSearch('')
+    setSavingIds(new Set())
+    setSavedIds(new Set())
     document.cookie = 'admin-session=; path=/; max-age=0'
   }
 
@@ -86,6 +142,7 @@ export default function AdminPage() {
       const result = await res.json()
       const siteData = result.dictionary as SiteData
       setData(siteData)
+      setOriginalData(JSON.parse(JSON.stringify(siteData)))
       setSha(result.sha)
       if (result.person) {
         setAuthenticatedPerson(result.person)
@@ -105,24 +162,34 @@ export default function AdminPage() {
     }
   }
 
-  async function handleSave() {
+  async function saveData(triggerId: string) {
     if (!data) return
-    setSaving(true)
+    setSavingIds(prev => new Set(prev).add(triggerId))
+    setSavedIds(prev => { const s = new Set(prev); s.delete(triggerId); return s })
     setError('')
-    setSuccess('')
     const res = await fetch('/api/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ dictionary: data, sha }),
     })
+    setSavingIds(prev => { const s = new Set(prev); s.delete(triggerId); return s })
     if (res.ok) {
-      setSuccess('Saved! Site will rebuild in ~30 seconds.')
-      await loadData()
+      setSavedIds(prev => new Set(prev).add(triggerId))
+      // Refresh sha and original data
+      const getRes = await fetch('/api/save')
+      if (getRes.ok) {
+        const result = await getRes.json()
+        setOriginalData(JSON.parse(JSON.stringify(result.dictionary)))
+        setSha(result.sha)
+      }
+      // Clear "Saved" after 2s
+      setTimeout(() => {
+        setSavedIds(prev => { const s = new Set(prev); s.delete(triggerId); return s })
+      }, 2000)
     } else {
       const result = await res.json()
       setError(result.error || 'Failed to save')
     }
-    setSaving(false)
   }
 
   function generateId(name: string): string {
@@ -132,7 +199,7 @@ export default function AdminPage() {
       .replace(/^-|-$/g, '')
   }
 
-  // --- Reorder helpers (master only) ---
+  // --- Reorder helpers (master only) — auto-save ---
   function moveItem<T>(arr: T[], from: number, to: number): T[] {
     if (to < 0 || to >= arr.length) return arr
     const updated = [...arr]
@@ -200,11 +267,7 @@ export default function AdminPage() {
   function addTerm() {
     if (!data || !isMaster) return
     const id = `new-term-${Date.now()}`
-    const newTerm: Term = {
-      id,
-      name: '',
-      definitions: {},
-    }
+    const newTerm: Term = { id, name: '', definitions: {} }
     setData({ ...data, terms: [...data.terms, newTerm] })
     setExpandedId(id)
   }
@@ -212,7 +275,7 @@ export default function AdminPage() {
   function updateTermName(index: number, value: string) {
     if (!data || !isMaster) return
     const updated = [...data.terms]
-    const newId = generateId(value)
+    const newId = generateId(value) || updated[index].id
     updated[index] = { ...updated[index], name: value, id: newId }
     setData({ ...data, terms: updated })
     setExpandedId(newId)
@@ -232,7 +295,8 @@ export default function AdminPage() {
   function deleteTerm(index: number) {
     if (!data || !isMaster) return
     if (!confirm(`Delete "${data.terms[index].name || 'this term'}"?`)) return
-    setData({ ...data, terms: data.terms.filter((_, i) => i !== index) })
+    const updated = { ...data, terms: data.terms.filter((_, i) => i !== index) }
+    setData(updated)
     setExpandedId(null)
   }
 
@@ -248,7 +312,7 @@ export default function AdminPage() {
   function updateFAQQuestion(index: number, question: string) {
     if (!data || !isMaster) return
     const updated = [...data.faq]
-    const newId = generateId(question || `faq-${Date.now()}`)
+    const newId = generateId(question) || updated[index].id
     updated[index] = { ...updated[index], question, id: newId }
     setData({ ...data, faq: updated })
     setExpandedId(newId)
@@ -268,8 +332,32 @@ export default function AdminPage() {
   function deleteFAQ(index: number) {
     if (!data || !isMaster) return
     if (!confirm(`Delete "${data.faq[index].question || 'this question'}"?`)) return
-    setData({ ...data, faq: data.faq.filter((_, i) => i !== index) })
+    const updated = { ...data, faq: data.faq.filter((_, i) => i !== index) }
+    setData(updated)
     setExpandedId(null)
+  }
+
+  // --- Save button helper ---
+  function renderSaveBtn(id: string, isDirty: boolean) {
+    const isSaving = savingIds.has(id)
+    const isSaved = savedIds.has(id)
+    if (isSaving) {
+      return <button className={styles.cardSaveBtn} disabled>Saving...</button>
+    }
+    if (isSaved) {
+      return <button className={`${styles.cardSaveBtn} ${styles.cardSaveBtnSaved}`} disabled>Saved</button>
+    }
+    if (isDirty) {
+      return (
+        <button
+          className={`${styles.cardSaveBtn} ${styles.cardSaveBtnDirty}`}
+          onClick={(e) => { e.stopPropagation(); saveData(id) }}
+        >
+          Save
+        </button>
+      )
+    }
+    return null
   }
 
   // --- Login Screen ---
@@ -331,6 +419,16 @@ export default function AdminPage() {
     people: data.people.length,
   }
 
+  const peopleDirty = isPeopleDirty()
+  const anyOrderDirty = (() => {
+    if (!originalData) return false
+    if (data.terms.length !== originalData.terms.length) return true
+    if (data.faq.length !== originalData.faq.length) return true
+    if (data.terms.some((t, i) => t.id !== originalData.terms[i]?.id)) return true
+    if (data.faq.some((f, i) => f.id !== originalData.faq[i]?.id)) return true
+    return false
+  })()
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -348,17 +446,11 @@ export default function AdminPage() {
             </button>
           </p>
         </div>
-        <button
-          className={styles.saveBtn}
-          onClick={handleSave}
-          disabled={saving}
-        >
-          {saving ? 'Saving...' : 'Save & Publish'}
-        </button>
+        {/* Show a global save for structural changes (reorder, add, delete) */}
+        {anyOrderDirty && renderSaveBtn('_structure', true)}
       </div>
 
       {error && <p className={styles.error}>{error}</p>}
-      {success && <p className={styles.success}>{success}</p>}
 
       <div className={styles.adminTabs}>
         <div className={styles.tabButtons}>
@@ -432,10 +524,11 @@ export default function AdminPage() {
             const isExpanded = expandedId === faq.id
             const answer = faq.answers[selectedPerson]
             const hasAnswer = answer && answer.trim().length > 0
+            const dirty = isFAQDirty(faq.id)
             return (
               <div
                 key={faq.id || index}
-                className={`${styles.card} ${isExpanded ? styles.cardExpanded : ''}`}
+                className={`${styles.card} ${isExpanded ? styles.cardExpanded : ''} ${dirty ? styles.cardDirty : ''}`}
               >
                 <div
                   className={styles.cardHeader}
@@ -452,6 +545,7 @@ export default function AdminPage() {
                     )}
                   </div>
                   <div className={styles.cardActions}>
+                    {renderSaveBtn(faq.id, dirty)}
                     {isMaster && (
                       <span className={styles.reorderBtns}>
                         <button
@@ -541,10 +635,11 @@ export default function AdminPage() {
             const isExpanded = expandedId === term.id
             const definition = term.definitions[selectedPerson]
             const hasDef = definition && definition.trim().length > 0
+            const dirty = isTermDirty(term.id)
             return (
               <div
                 key={term.id || index}
-                className={`${styles.card} ${isExpanded ? styles.cardExpanded : ''}`}
+                className={`${styles.card} ${isExpanded ? styles.cardExpanded : ''} ${dirty ? styles.cardDirty : ''}`}
               >
                 <div
                   className={styles.cardHeader}
@@ -561,6 +656,7 @@ export default function AdminPage() {
                     )}
                   </div>
                   <div className={styles.cardActions}>
+                    {renderSaveBtn(term.id, dirty)}
                     {isMaster && (
                       <span className={styles.reorderBtns}>
                         <button
@@ -680,6 +776,11 @@ export default function AdminPage() {
             <input name="newPerson" type="text" placeholder="New person name" />
             <button type="submit">Add</button>
           </form>
+          {peopleDirty && (
+            <div className={styles.toolbar} style={{ marginTop: '1rem' }}>
+              {renderSaveBtn('_people', true)}
+            </div>
+          )}
         </div>
       )}
     </div>
