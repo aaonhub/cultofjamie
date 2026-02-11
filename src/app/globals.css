@@ -189,6 +189,7 @@ html.dark .search-bar:focus-within {
   height: 1rem;
   color: var(--color-muted);
   flex-shrink: 0;
+  pointer-events: none;
   transition: color 0.2s ease;
 }
 
