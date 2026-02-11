@@ -81,7 +81,8 @@
       "id": "anger",
       "name": "Anger",
       "definitions": {
-        "Ender": "The belief that something has wronged you."
+        "Ender": "The belief that something has wronged you.",
+        "Jamie": "Stuff"
       }
     },
     {
