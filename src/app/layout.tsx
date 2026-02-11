@@ -24,6 +24,24 @@ export default function RootLayout({
                   document.documentElement.classList.add('dark');
                 }
               })();
+              // Auto-reload on chunk load errors (stale deployment)
+              function handleChunkError(msg) {
+                if (msg && (msg.indexOf('ChunkLoadError') !== -1 || msg.indexOf('Loading chunk') !== -1)) {
+                  var key = 'chunk_reload';
+                  var last = sessionStorage.getItem(key);
+                  var now = Date.now();
+                  if (!last || now - Number(last) > 10000) {
+                    sessionStorage.setItem(key, String(now));
+                    window.location.reload();
+                  }
+                }
+              }
+              window.addEventListener('error', function(e) {
+                handleChunkError(e.message || '');
+              });
+              window.addEventListener('unhandledrejection', function(e) {
+                handleChunkError(e.reason ? (e.reason.message || String(e.reason)) : '');
+              });
             `,
           }}
         />
