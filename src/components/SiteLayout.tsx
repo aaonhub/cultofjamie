@@ -32,6 +32,20 @@ export default function SiteLayout({ data }: { data: SiteData }) {
   const [search, setSearch] = useState(initialSearch)
   const [focusedId, setFocusedId] = useState<string | null>(initialFocus)
 
+  // On static pages, searchParams may be empty on first render (hydration) then
+  // populate on the next render. Sync state from URL params when they appear.
+  const didSyncRef = useRef(false)
+  useEffect(() => {
+    if (didSyncRef.current) return
+    if (!paramPerson && !paramTab && !paramSearch && !paramFocus) return
+    didSyncRef.current = true
+
+    if (paramPerson && data.people.includes(paramPerson)) setSelectedPerson(paramPerson)
+    if (paramTab === 'dictionary') setActiveTab('dictionary')
+    if (paramSearch) setSearch(paramSearch)
+    if (paramFocus) setFocusedId(paramFocus)
+  }, [paramPerson, paramTab, paramSearch, paramFocus, data.people])
+
   // Track the viewport offset of the focused element before a person switch
   const savedOffsetRef = useRef<number | null>(null)
   const urlTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -62,19 +76,20 @@ export default function SiteLayout({ data }: { data: SiteData }) {
     }
   }, [selectedPerson, activeTab, search, focusedId, data.people, router])
 
-  // Scroll to focused element on initial page load only
+  // Scroll to focused element on initial page load (once focusedId is set)
+  const didScrollRef = useRef(false)
   useEffect(() => {
-    if (initialFocus) {
-      try {
-        const el = document.getElementById(initialFocus)
-        if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' })
-      } catch {
-        // Some mobile browsers don't support instant behavior
-        const el = document.getElementById(initialFocus)
-        if (el) el.scrollIntoView({ block: 'center' })
-      }
+    if (didScrollRef.current || !focusedId) return
+    didScrollRef.current = true
+    try {
+      const el = document.getElementById(focusedId)
+      if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' })
+    } catch {
+      // Some mobile browsers don't support instant behavior
+      const el = document.getElementById(focusedId)
+      if (el) el.scrollIntoView({ block: 'center' })
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [focusedId])
 
   // Easter egg: update header to show selected person's name
   useEffect(() => {
