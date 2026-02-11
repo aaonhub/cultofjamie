@@ -438,32 +438,52 @@
   min-height: 2.5rem;
 }
 
-/* Reorder buttons */
-.reorderBtns {
-  display: inline-flex;
-  gap: 0.15rem;
-}
-
-.reorderBtns button {
+/* Drag handle */
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.15rem;
+  cursor: grab;
+  color: #c5b8a8;
+  border: none;
   background: none;
-  border: 1px solid #ddd5c8;
   border-radius: 3px;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+  touch-action: none;
+}
+
+.dragHandle:hover {
   color: #8a8278;
-  cursor: pointer;
-  font-size: 0.65rem;
-  line-height: 1;
-  padding: 0.2rem 0.35rem;
-  transition: color 0.15s, border-color 0.15s;
+  background: rgba(0, 0, 0, 0.04);
 }
 
-.reorderBtns button:hover:not(:disabled) {
-  color: #3a3530;
-  border-color: #8a8278;
+.dragHandle:active {
+  cursor: grabbing;
 }
 
-.reorderBtns button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+/* Card while being dragged (ghost/placeholder) */
+.cardDragging {
+  opacity: 0.4 !important;
+}
+
+/* Drag overlay (the floating card following cursor) */
+.cardOverlay {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  cursor: grabbing;
+  opacity: 1 !important;
+}
+
+/* Person row left side with handle */
+.personRowLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.personRowDragging {
+  opacity: 0.4 !important;
 }
 
 /* Inline delete button (inside card body) */
@@ -739,14 +759,17 @@
   color: #555;
 }
 
-:global(html.dark) .reorderBtns button {
-  border-color: #333;
-  color: #888;
+:global(html.dark) .dragHandle {
+  color: #555;
 }
 
-:global(html.dark) .reorderBtns button:hover:not(:disabled) {
-  color: #e0e0e0;
-  border-color: #666;
+:global(html.dark) .dragHandle:hover {
+  color: #999;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:global(html.dark) .cardOverlay {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 :global(html.dark) .deleteBtnInline {

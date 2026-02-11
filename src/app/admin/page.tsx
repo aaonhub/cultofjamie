@@ -2,9 +2,66 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { SiteData, Term, FAQEntry } from '@/lib/types'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+  type DraggableAttributes,
+} from '@dnd-kit/core'
+import type { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities'
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import styles from './admin.module.css'
 
 type AdminTab = 'faq' | 'terms' | 'people'
+
+// --- Sortable wrapper component ---
+function SortableCard({
+  id,
+  disabled,
+  children,
+}: {
+  id: string
+  disabled?: boolean
+  children: (props: {
+    setNodeRef: (el: HTMLElement | null) => void
+    style: React.CSSProperties
+    listeners: SyntheticListenerMap | undefined
+    attributes: DraggableAttributes
+    isDragging: boolean
+  }) => React.ReactNode
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, disabled })
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+    position: 'relative' as const,
+    zIndex: isDragging ? 10 : 'auto',
+  }
+
+  return <>{children({ setNodeRef, style, listeners, attributes, isDragging })}</>
+}
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false)
@@ -21,8 +78,19 @@ export default function AdminPage() {
   const [adminSearch, setAdminSearch] = useState('')
   const [savingIds, setSavingIds] = useState<Set<string>>(new Set())
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
+  const [activeDragId, setActiveDragId] = useState<string | null>(null)
 
   const isMaster = role === 'master'
+
+  // --- Sensors for drag and drop ---
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
 
   // --- Auto-resize textarea ---
   const autoResize = useCallback((el: HTMLTextAreaElement | null) => {
@@ -199,38 +267,49 @@ export default function AdminPage() {
       .replace(/^-|-$/g, '')
   }
 
-  // --- Reorder helpers (master only) — auto-save ---
-  function moveItem<T>(arr: T[], from: number, to: number): T[] {
-    if (to < 0 || to >= arr.length) return arr
-    const updated = [...arr]
-    const [item] = updated.splice(from, 1)
-    updated.splice(to, 0, item)
-    return updated
+  // --- Drag and drop handlers ---
+  function handleDragStart(event: DragStartEvent) {
+    setActiveDragId(event.active.id as string)
   }
 
-  function moveTermUp(index: number) {
-    if (!data || !isMaster || index === 0) return
-    setData({ ...data, terms: moveItem(data.terms, index, index - 1) })
+  function handleDragEndFAQ(event: DragEndEvent) {
+    setActiveDragId(null)
+    if (!data || !isMaster) return
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = data.faq.findIndex(f => f.id === active.id)
+    const newIndex = data.faq.findIndex(f => f.id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+    setData({ ...data, faq: arrayMove(data.faq, oldIndex, newIndex) })
   }
-  function moveTermDown(index: number) {
-    if (!data || !isMaster || index >= data.terms.length - 1) return
-    setData({ ...data, terms: moveItem(data.terms, index, index + 1) })
+
+  function handleDragEndTerms(event: DragEndEvent) {
+    setActiveDragId(null)
+    if (!data || !isMaster) return
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = data.terms.findIndex(t => t.id === active.id)
+    const newIndex = data.terms.findIndex(t => t.id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+    setData({ ...data, terms: arrayMove(data.terms, oldIndex, newIndex) })
   }
-  function moveFAQUp(index: number) {
-    if (!data || !isMaster || index === 0) return
-    setData({ ...data, faq: moveItem(data.faq, index, index - 1) })
+
+  function handleDragEndPeople(event: DragEndEvent) {
+    setActiveDragId(null)
+    if (!data || !isMaster) return
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = data.people.findIndex(p => p === active.id)
+    const newIndex = data.people.findIndex(p => p === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+    setData({ ...data, people: arrayMove(data.people, oldIndex, newIndex) })
   }
-  function moveFAQDown(index: number) {
-    if (!data || !isMaster || index >= data.faq.length - 1) return
-    setData({ ...data, faq: moveItem(data.faq, index, index + 1) })
-  }
-  function movePersonUp(index: number) {
-    if (!data || !isMaster || index === 0) return
-    setData({ ...data, people: moveItem(data.people, index, index - 1) })
-  }
-  function movePersonDown(index: number) {
-    if (!data || !isMaster || index >= data.people.length - 1) return
-    setData({ ...data, people: moveItem(data.people, index, index + 1) })
+
+  function handleDragCancel() {
+    setActiveDragId(null)
   }
 
   // --- People (master only) ---
@@ -360,6 +439,28 @@ export default function AdminPage() {
     return null
   }
 
+  // --- Drag handle component ---
+  function DragHandle({ listeners, attributes }: { listeners?: SyntheticListenerMap; attributes?: DraggableAttributes }) {
+    return (
+      <button
+        className={styles.dragHandle}
+        {...listeners}
+        {...attributes}
+        tabIndex={0}
+        title="Drag to reorder"
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <circle cx="4" cy="3" r="1.2" />
+          <circle cx="10" cy="3" r="1.2" />
+          <circle cx="4" cy="7" r="1.2" />
+          <circle cx="10" cy="7" r="1.2" />
+          <circle cx="4" cy="11" r="1.2" />
+          <circle cx="10" cy="11" r="1.2" />
+        </svg>
+      </button>
+    )
+  }
+
   // --- Login Screen ---
   if (!authenticated) {
     return (
@@ -428,6 +529,14 @@ export default function AdminPage() {
     if (data.faq.some((f, i) => f.id !== originalData.faq[i]?.id)) return true
     return false
   })()
+
+  // Get drag overlay content
+  const draggedFAQ = activeDragId ? data.faq.find(f => f.id === activeDragId) : null
+  const draggedTerm = activeDragId ? data.terms.find(t => t.id === activeDragId) : null
+  const draggedPerson = activeDragId && activeTab === 'people' ? data.people.find(p => p === activeDragId) : null
+
+  // Disable drag when searching (filtered list would mess up indices)
+  const canDrag = isMaster && !query
 
   return (
     <div className={styles.container}>
@@ -520,100 +629,131 @@ export default function AdminPage() {
               <button onClick={addFAQ}>+ Add Question</button>
             </div>
           )}
-          {filteredFAQs.map(({ faq, index }) => {
-            const isExpanded = expandedId === faq.id
-            const answer = faq.answers[selectedPerson]
-            const hasAnswer = answer && answer.trim().length > 0
-            const dirty = isFAQDirty(faq.id)
-            return (
-              <div
-                key={faq.id || index}
-                className={`${styles.card} ${isExpanded ? styles.cardExpanded : ''} ${dirty ? styles.cardDirty : ''}`}
-              >
-                <div
-                  className={styles.cardHeader}
-                  onClick={() => setExpandedId(isExpanded ? null : faq.id)}
-                >
-                  <div className={styles.cardTitleWrap}>
-                    <span className={styles.cardTitle}>
-                      {faq.question || <em className={styles.untitled}>Untitled question</em>}
-                    </span>
-                    {!isExpanded && (
-                      <span className={hasAnswer ? styles.hasAnswer : styles.noAnswer}>
-                        {hasAnswer ? `${selectedPerson} answered` : `No answer from ${selectedPerson}`}
-                      </span>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEndFAQ}
+            onDragCancel={handleDragCancel}
+          >
+            <SortableContext
+              items={filteredFAQs.map(({ faq }) => faq.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {filteredFAQs.map(({ faq, index }) => {
+                const isExpanded = expandedId === faq.id
+                const answer = faq.answers[selectedPerson]
+                const hasAnswer = answer && answer.trim().length > 0
+                const dirty = isFAQDirty(faq.id)
+                return (
+                  <SortableCard key={faq.id} id={faq.id} disabled={!canDrag}>
+                    {({ setNodeRef, style, listeners, attributes, isDragging }) => (
+                      <div
+                        ref={setNodeRef}
+                        style={style}
+                        className={`${styles.card} ${isExpanded ? styles.cardExpanded : ''} ${dirty ? styles.cardDirty : ''} ${isDragging ? styles.cardDragging : ''}`}
+                      >
+                        <div
+                          className={styles.cardHeader}
+                          onClick={() => setExpandedId(isExpanded ? null : faq.id)}
+                        >
+                          {canDrag && <DragHandle listeners={listeners} attributes={attributes} />}
+                          <div className={styles.cardTitleWrap}>
+                            <span className={styles.cardTitle}>
+                              {faq.question || <em className={styles.untitled}>Untitled question</em>}
+                            </span>
+                            {!isExpanded && (
+                              <span className={hasAnswer ? styles.hasAnswer : styles.noAnswer}>
+                                {hasAnswer ? `${selectedPerson} answered` : `No answer from ${selectedPerson}`}
+                              </span>
+                            )}
+                          </div>
+                          <div className={styles.cardActions}>
+                            {renderSaveBtn(faq.id, dirty)}
+                            <span className={styles.chevron}>{isExpanded ? '\u2212' : '+'}</span>
+                          </div>
+                        </div>
+                        {isExpanded && (
+                          <div className={styles.cardBody}>
+                            {isMaster && (
+                              <label>
+                                <span className={styles.fieldLabel}>Question text</span>
+                                <textarea
+                                  ref={textareaRef}
+                                  value={faq.question}
+                                  onChange={(e) =>
+                                    handleTextareaChange(e, (v) => updateFAQQuestion(index, v))
+                                  }
+                                  rows={1}
+                                  autoFocus
+                                />
+                              </label>
+                            )}
+                            <label>
+                              <span className={styles.fieldLabel}>
+                                {selectedPerson}&apos;s answer
+                              </span>
+                              <textarea
+                                ref={textareaRef}
+                                value={faq.answers[selectedPerson] || ''}
+                                onChange={(e) =>
+                                  handleTextareaChange(e, (v) =>
+                                    updateFAQAnswer(index, selectedPerson, v)
+                                  )
+                                }
+                                rows={1}
+                                placeholder={
+                                  canEditDefinition
+                                    ? `Write ${selectedPerson}'s answer...`
+                                    : `${selectedPerson} hasn't answered yet`
+                                }
+                                readOnly={!canEditDefinition}
+                                style={readOnlyStyle}
+                              />
+                            </label>
+                            {isMaster && (
+                              <button
+                                className={styles.deleteBtnInline}
+                                onClick={() => deleteFAQ(index)}
+                              >
+                                Delete question
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )}
-                  </div>
-                  <div className={styles.cardActions}>
-                    {renderSaveBtn(faq.id, dirty)}
-                    {isMaster && (
-                      <span className={styles.reorderBtns}>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); moveFAQUp(index) }}
-                          disabled={index === 0}
-                          title="Move up"
-                        >&#9650;</button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); moveFAQDown(index) }}
-                          disabled={index === data.faq.length - 1}
-                          title="Move down"
-                        >&#9660;</button>
+                  </SortableCard>
+                )
+              })}
+            </SortableContext>
+            <DragOverlay>
+              {draggedFAQ && (
+                <div className={`${styles.card} ${styles.cardOverlay}`}>
+                  <div className={styles.cardHeader}>
+                    <div className={styles.dragHandle}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                        <circle cx="4" cy="3" r="1.2" />
+                        <circle cx="10" cy="3" r="1.2" />
+                        <circle cx="4" cy="7" r="1.2" />
+                        <circle cx="10" cy="7" r="1.2" />
+                        <circle cx="4" cy="11" r="1.2" />
+                        <circle cx="10" cy="11" r="1.2" />
+                      </svg>
+                    </div>
+                    <div className={styles.cardTitleWrap}>
+                      <span className={styles.cardTitle}>
+                        {draggedFAQ.question || <em className={styles.untitled}>Untitled question</em>}
                       </span>
-                    )}
-                    <span className={styles.chevron}>{isExpanded ? '\u2212' : '+'}</span>
+                    </div>
+                    <div className={styles.cardActions}>
+                      <span className={styles.chevron}>+</span>
+                    </div>
                   </div>
                 </div>
-                {isExpanded && (
-                  <div className={styles.cardBody}>
-                    {isMaster && (
-                      <label>
-                        <span className={styles.fieldLabel}>Question text</span>
-                        <textarea
-                          ref={textareaRef}
-                          value={faq.question}
-                          onChange={(e) =>
-                            handleTextareaChange(e, (v) => updateFAQQuestion(index, v))
-                          }
-                          rows={1}
-                          autoFocus
-                        />
-                      </label>
-                    )}
-                    <label>
-                      <span className={styles.fieldLabel}>
-                        {selectedPerson}&apos;s answer
-                      </span>
-                      <textarea
-                        ref={textareaRef}
-                        value={faq.answers[selectedPerson] || ''}
-                        onChange={(e) =>
-                          handleTextareaChange(e, (v) =>
-                            updateFAQAnswer(index, selectedPerson, v)
-                          )
-                        }
-                        rows={1}
-                        placeholder={
-                          canEditDefinition
-                            ? `Write ${selectedPerson}'s answer...`
-                            : `${selectedPerson} hasn't answered yet`
-                        }
-                        readOnly={!canEditDefinition}
-                        style={readOnlyStyle}
-                      />
-                    </label>
-                    {isMaster && (
-                      <button
-                        className={styles.deleteBtnInline}
-                        onClick={() => deleteFAQ(index)}
-                      >
-                        Delete question
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })}
+              )}
+            </DragOverlay>
+          </DndContext>
           {filteredFAQs.length === 0 && query && (
             <p className={styles.emptyState}>No questions matching &ldquo;{adminSearch}&rdquo;</p>
           )}
@@ -631,97 +771,128 @@ export default function AdminPage() {
               <button onClick={addTerm}>+ Add Term</button>
             </div>
           )}
-          {filteredTerms.map(({ term, index }) => {
-            const isExpanded = expandedId === term.id
-            const definition = term.definitions[selectedPerson]
-            const hasDef = definition && definition.trim().length > 0
-            const dirty = isTermDirty(term.id)
-            return (
-              <div
-                key={term.id || index}
-                className={`${styles.card} ${isExpanded ? styles.cardExpanded : ''} ${dirty ? styles.cardDirty : ''}`}
-              >
-                <div
-                  className={styles.cardHeader}
-                  onClick={() => setExpandedId(isExpanded ? null : term.id)}
-                >
-                  <div className={styles.cardTitleWrap}>
-                    <span className={styles.cardTitle}>
-                      {term.name || <em className={styles.untitled}>Untitled term</em>}
-                    </span>
-                    {!isExpanded && (
-                      <span className={hasDef ? styles.hasAnswer : styles.noAnswer}>
-                        {hasDef ? `${selectedPerson} defined` : `No definition from ${selectedPerson}`}
-                      </span>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEndTerms}
+            onDragCancel={handleDragCancel}
+          >
+            <SortableContext
+              items={filteredTerms.map(({ term }) => term.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {filteredTerms.map(({ term, index }) => {
+                const isExpanded = expandedId === term.id
+                const definition = term.definitions[selectedPerson]
+                const hasDef = definition && definition.trim().length > 0
+                const dirty = isTermDirty(term.id)
+                return (
+                  <SortableCard key={term.id} id={term.id} disabled={!canDrag}>
+                    {({ setNodeRef, style, listeners, attributes, isDragging }) => (
+                      <div
+                        ref={setNodeRef}
+                        style={style}
+                        className={`${styles.card} ${isExpanded ? styles.cardExpanded : ''} ${dirty ? styles.cardDirty : ''} ${isDragging ? styles.cardDragging : ''}`}
+                      >
+                        <div
+                          className={styles.cardHeader}
+                          onClick={() => setExpandedId(isExpanded ? null : term.id)}
+                        >
+                          {canDrag && <DragHandle listeners={listeners} attributes={attributes} />}
+                          <div className={styles.cardTitleWrap}>
+                            <span className={styles.cardTitle}>
+                              {term.name || <em className={styles.untitled}>Untitled term</em>}
+                            </span>
+                            {!isExpanded && (
+                              <span className={hasDef ? styles.hasAnswer : styles.noAnswer}>
+                                {hasDef ? `${selectedPerson} defined` : `No definition from ${selectedPerson}`}
+                              </span>
+                            )}
+                          </div>
+                          <div className={styles.cardActions}>
+                            {renderSaveBtn(term.id, dirty)}
+                            <span className={styles.chevron}>{isExpanded ? '\u2212' : '+'}</span>
+                          </div>
+                        </div>
+                        {isExpanded && (
+                          <div className={styles.cardBody}>
+                            {isMaster && (
+                              <label>
+                                <span className={styles.fieldLabel}>Term name</span>
+                                <input
+                                  type="text"
+                                  value={term.name}
+                                  onChange={(e) => updateTermName(index, e.target.value)}
+                                  autoFocus
+                                />
+                              </label>
+                            )}
+                            <label>
+                              <span className={styles.fieldLabel}>
+                                {selectedPerson}&apos;s definition
+                              </span>
+                              <textarea
+                                ref={textareaRef}
+                                value={term.definitions[selectedPerson] || ''}
+                                onChange={(e) =>
+                                  handleTextareaChange(e, (v) =>
+                                    updateTermDefinition(index, selectedPerson, v)
+                                  )
+                                }
+                                rows={1}
+                                placeholder={
+                                  canEditDefinition
+                                    ? `Write ${selectedPerson}'s definition...`
+                                    : `${selectedPerson} hasn't written a definition yet`
+                                }
+                                readOnly={!canEditDefinition}
+                                style={readOnlyStyle}
+                              />
+                            </label>
+                            {isMaster && (
+                              <button
+                                className={styles.deleteBtnInline}
+                                onClick={() => deleteTerm(index)}
+                              >
+                                Delete term
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )}
-                  </div>
-                  <div className={styles.cardActions}>
-                    {renderSaveBtn(term.id, dirty)}
-                    {isMaster && (
-                      <span className={styles.reorderBtns}>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); moveTermUp(index) }}
-                          disabled={index === 0}
-                          title="Move up"
-                        >&#9650;</button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); moveTermDown(index) }}
-                          disabled={index === data.terms.length - 1}
-                          title="Move down"
-                        >&#9660;</button>
+                  </SortableCard>
+                )
+              })}
+            </SortableContext>
+            <DragOverlay>
+              {draggedTerm && (
+                <div className={`${styles.card} ${styles.cardOverlay}`}>
+                  <div className={styles.cardHeader}>
+                    <div className={styles.dragHandle}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                        <circle cx="4" cy="3" r="1.2" />
+                        <circle cx="10" cy="3" r="1.2" />
+                        <circle cx="4" cy="7" r="1.2" />
+                        <circle cx="10" cy="7" r="1.2" />
+                        <circle cx="4" cy="11" r="1.2" />
+                        <circle cx="10" cy="11" r="1.2" />
+                      </svg>
+                    </div>
+                    <div className={styles.cardTitleWrap}>
+                      <span className={styles.cardTitle}>
+                        {draggedTerm.name || <em className={styles.untitled}>Untitled term</em>}
                       </span>
-                    )}
-                    <span className={styles.chevron}>{isExpanded ? '\u2212' : '+'}</span>
+                    </div>
+                    <div className={styles.cardActions}>
+                      <span className={styles.chevron}>+</span>
+                    </div>
                   </div>
                 </div>
-                {isExpanded && (
-                  <div className={styles.cardBody}>
-                    {isMaster && (
-                      <label>
-                        <span className={styles.fieldLabel}>Term name</span>
-                        <input
-                          type="text"
-                          value={term.name}
-                          onChange={(e) => updateTermName(index, e.target.value)}
-                          autoFocus
-                        />
-                      </label>
-                    )}
-                    <label>
-                      <span className={styles.fieldLabel}>
-                        {selectedPerson}&apos;s definition
-                      </span>
-                      <textarea
-                        ref={textareaRef}
-                        value={term.definitions[selectedPerson] || ''}
-                        onChange={(e) =>
-                          handleTextareaChange(e, (v) =>
-                            updateTermDefinition(index, selectedPerson, v)
-                          )
-                        }
-                        rows={1}
-                        placeholder={
-                          canEditDefinition
-                            ? `Write ${selectedPerson}'s definition...`
-                            : `${selectedPerson} hasn't written a definition yet`
-                        }
-                        readOnly={!canEditDefinition}
-                        style={readOnlyStyle}
-                      />
-                    </label>
-                    {isMaster && (
-                      <button
-                        className={styles.deleteBtnInline}
-                        onClick={() => deleteTerm(index)}
-                      >
-                        Delete term
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })}
+              )}
+            </DragOverlay>
+          </DndContext>
           {filteredTerms.length === 0 && query && (
             <p className={styles.emptyState}>No terms matching &ldquo;{adminSearch}&rdquo;</p>
           )}
@@ -734,34 +905,65 @@ export default function AdminPage() {
       {/* People Tab (master only) */}
       {activeTab === 'people' && isMaster && (
         <div>
-          <div className={styles.peopleList}>
-            {data.people.map((person, index) => (
-              <div key={person} className={styles.personRow}>
-                <span>{person}</span>
-                <div className={styles.personRowActions}>
-                  <span className={styles.reorderBtns}>
-                    <button
-                      onClick={() => movePersonUp(index)}
-                      disabled={index === 0}
-                      title="Move up"
-                    >&#9650;</button>
-                    <button
-                      onClick={() => movePersonDown(index)}
-                      disabled={index === data.people.length - 1}
-                      title="Move down"
-                    >&#9660;</button>
-                  </span>
-                  <button
-                    className={styles.deleteBtnSmall}
-                    onClick={() => removePerson(person)}
-                    title={`Remove ${person}`}
-                  >
-                    &times;
-                  </button>
-                </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEndPeople}
+            onDragCancel={handleDragCancel}
+          >
+            <SortableContext
+              items={data.people}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className={styles.peopleList}>
+                {data.people.map((person) => (
+                  <SortableCard key={person} id={person}>
+                    {({ setNodeRef, style, listeners, attributes, isDragging }) => (
+                      <div
+                        ref={setNodeRef}
+                        style={style}
+                        className={`${styles.personRow} ${isDragging ? styles.personRowDragging : ''}`}
+                      >
+                        <div className={styles.personRowLeft}>
+                          <DragHandle listeners={listeners} attributes={attributes} />
+                          <span>{person}</span>
+                        </div>
+                        <div className={styles.personRowActions}>
+                          <button
+                            className={styles.deleteBtnSmall}
+                            onClick={() => removePerson(person)}
+                            title={`Remove ${person}`}
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </SortableCard>
+                ))}
               </div>
-            ))}
-          </div>
+            </SortableContext>
+            <DragOverlay>
+              {draggedPerson && (
+                <div className={`${styles.personRow} ${styles.cardOverlay}`}>
+                  <div className={styles.personRowLeft}>
+                    <div className={styles.dragHandle}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                        <circle cx="4" cy="3" r="1.2" />
+                        <circle cx="10" cy="3" r="1.2" />
+                        <circle cx="4" cy="7" r="1.2" />
+                        <circle cx="10" cy="7" r="1.2" />
+                        <circle cx="4" cy="11" r="1.2" />
+                        <circle cx="10" cy="11" r="1.2" />
+                      </svg>
+                    </div>
+                    <span>{draggedPerson}</span>
+                  </div>
+                </div>
+              )}
+            </DragOverlay>
+          </DndContext>
           <form
             className={styles.addForm}
             onSubmit={(e) => {
