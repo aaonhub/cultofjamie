@@ -31,7 +31,7 @@ export default function RootLayout({
       <body>
         <header>
           <nav>
-            <a href="/">Cult of Jamie</a>
+            <a href="/" id="site-title">Cult of Jamie</a>
             <ThemeToggle />
           </nav>
         </header>

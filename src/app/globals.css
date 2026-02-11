@@ -85,14 +85,14 @@ main {
 .site-layout {
   display: grid;
   grid-template-columns: 140px 1fr;
-  gap: 2rem;
+  gap: 4rem;
   padding-top: 2rem;
 }
 
 /* Person Sidebar */
 .person-sidebar {
   position: sticky;
-  top: 2rem;
+  top: 25vh;
   align-self: start;
 }
 
@@ -233,17 +233,14 @@ h2 {
 
 .term-name {
   font-weight: bold;
-  font-size: 1rem;
-}
-
-.term-name::after {
-  content: ' \2014  ';
-  font-weight: normal;
+  font-size: 1.15rem;
+  display: block;
+  margin-bottom: 0.2rem;
 }
 
 .term-definition {
-  display: inline;
-  color: var(--color-text);
+  display: block;
+  color: var(--color-muted);
 }
 
 .term-empty {
@@ -264,7 +261,7 @@ h2 {
 }
 
 .faq-answer {
-  color: var(--color-text);
+  color: var(--color-muted);
   line-height: 1.6;
 }
 

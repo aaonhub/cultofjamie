@@ -2,13 +2,31 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Octokit } from '@octokit/rest'
 import { Dictionary } from '@/lib/types'
 
-function isAuthenticated(request: NextRequest): boolean {
+function getAuth(request: NextRequest): { person: string; role: 'master' | 'person' } | null {
   const session = request.cookies.get('admin-session')?.value
-  return !!session && session === process.env.ADMIN_PASSWORD
+  if (!session) return null
+
+  const passwordsRaw = process.env.ADMIN_PASSWORDS
+  if (!passwordsRaw) return null
+
+  try {
+    const passwords: Record<string, string> = JSON.parse(passwordsRaw)
+    if (session === '_master' && passwords._master) {
+      return { person: '_master', role: 'master' }
+    }
+    if (session in passwords && session !== '_master') {
+      return { person: session, role: 'person' }
+    }
+  } catch {
+    return null
+  }
+
+  return null
 }
 
 export async function GET(request: NextRequest) {
-  if (!isAuthenticated(request)) {
+  const auth = getAuth(request)
+  if (!auth) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -25,6 +43,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         dictionary: JSON.parse(content) as Dictionary,
         sha: data.sha,
+        person: auth.person,
+        role: auth.role,
       })
     }
 
@@ -38,7 +58,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAuthenticated(request)) {
+  const auth = getAuth(request)
+  if (!auth) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -61,6 +82,7 @@ export async function POST(request: NextRequest) {
 
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN })
 
+    const label = auth.role === 'master' ? 'master' : auth.person
     const content = Buffer.from(
       JSON.stringify(dictionary, null, 2),
       'utf-8'
@@ -70,7 +92,7 @@ export async function POST(request: NextRequest) {
       owner: process.env.GITHUB_OWNER!,
       repo: process.env.GITHUB_REPO!,
       path: 'data/dictionary.json',
-      message: `Update dictionary: ${new Date().toISOString()}`,
+      message: `Update dictionary (${label}): ${new Date().toISOString()}`,
       content,
       sha,
     })

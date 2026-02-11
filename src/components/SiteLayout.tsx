@@ -23,7 +23,7 @@ export default function SiteLayout({ data }: { data: SiteData }) {
       ? paramPerson
       : data.people[0] || 'Jamie'
   const initialTab: ActiveTab =
-    paramTab === 'faq' ? 'faq' : 'dictionary'
+    paramTab === 'dictionary' ? 'dictionary' : 'faq'
   const initialSearch = paramSearch || ''
   const initialFocus = paramFocus || null
 
@@ -39,7 +39,7 @@ export default function SiteLayout({ data }: { data: SiteData }) {
     (person: string, tab: ActiveTab, q: string, focus: string | null) => {
       const params = new URLSearchParams()
       if (person !== data.people[0]) params.set('person', person)
-      if (tab !== 'dictionary') params.set('tab', tab)
+      if (tab !== 'faq') params.set('tab', tab)
       if (q) params.set('q', q)
       if (focus) params.set('focus', focus)
       const qs = params.toString()
@@ -60,6 +60,12 @@ export default function SiteLayout({ data }: { data: SiteData }) {
       if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' })
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Easter egg: update header to show selected person's name
+  useEffect(() => {
+    const title = document.getElementById('site-title')
+    if (title) title.textContent = `Cult of ${selectedPerson}`
+  }, [selectedPerson])
 
   function handleSelectPerson(person: string) {
     // Before switching, save where the focused element is on screen
@@ -106,16 +112,16 @@ export default function SiteLayout({ data }: { data: SiteData }) {
       <div className="content-area">
         <div className="tab-toggle">
           <button
-            className={activeTab === 'dictionary' ? 'active' : ''}
-            onClick={() => handleSelectTab('dictionary')}
-          >
-            Dictionary
-          </button>
-          <button
             className={activeTab === 'faq' ? 'active' : ''}
             onClick={() => handleSelectTab('faq')}
           >
             FAQ
+          </button>
+          <button
+            className={activeTab === 'dictionary' ? 'active' : ''}
+            onClick={() => handleSelectTab('dictionary')}
+          >
+            Dictionary
           </button>
         </div>
 

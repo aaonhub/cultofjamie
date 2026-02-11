@@ -1,7 +1,6 @@
 export interface Term {
   id: string
   name: string
-  category: string
   definitions: Record<string, string>
 }
 
@@ -13,7 +12,6 @@ export interface FAQEntry {
 
 export interface SiteData {
   people: string[]
-  categories: string[]
   terms: Term[]
   faq: FAQEntry[]
 }

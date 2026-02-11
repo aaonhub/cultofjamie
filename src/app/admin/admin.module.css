@@ -1,275 +1,612 @@
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  font-family: system-ui, -apple-system, sans-serif;
+/* Login page */
+.loginPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
 }
 
-.container h1 {
+.loginCard {
+  text-align: center;
+}
+
+.loginCard h1 {
+  font-family: Georgia, 'Times New Roman', serif;
   font-size: 1.5rem;
-  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+  color: #3a3530;
 }
 
-/* Login */
+.loginSubtitle {
+  color: #8a8278;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
 .loginForm {
   display: flex;
   gap: 0.5rem;
-  margin-top: 1rem;
+  justify-content: center;
 }
 
 .loginForm input {
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  flex: 1;
-  max-width: 300px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.95rem;
+  border: 1px solid #ddd5c8;
+  border-radius: 6px;
+  width: 220px;
+  font-family: inherit;
+  background: #fff;
+}
+
+.loginForm input:focus {
+  outline: none;
+  border-color: #8a8278;
 }
 
 .loginForm button {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.25rem;
   font-size: 0.9rem;
   cursor: pointer;
-  background: #1a1a1a;
-  color: white;
+  background: #3a3530;
+  color: #f5f0e8;
   border: none;
+  border-radius: 6px;
+  font-family: inherit;
 }
 
 .loginForm button:hover {
-  background: #333;
+  background: #524d46;
 }
 
-/* Admin Tabs */
-.adminTabs {
+/* Main container */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #3a3530;
+}
+
+.container h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Header bar */
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 1rem;
   margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  border-bottom: 1px solid #ddd5c8;
+}
+
+.loggedInAs {
+  font-size: 0.85rem;
+  color: #8a8278;
+  margin-top: 0.2rem;
+}
+
+.loggedInAs strong {
+  color: #3a3530;
+}
+
+/* Logout button (inline text link style) */
+.logoutBtn {
+  background: none;
+  border: none;
+  color: #8a8278;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: inherit;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.logoutBtn:hover {
+  color: #3a3530;
+}
+
+/* Save button */
+.saveBtn {
+  padding: 0.6rem 1.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: #3a3530;
+  color: #f5f0e8;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.saveBtn:hover {
+  background: #524d46;
+}
+
+.saveBtn:disabled {
+  background: #b5b0a8;
+  cursor: not-allowed;
+}
+
+/* Tabs */
+.adminTabs {
+  margin-bottom: 1rem;
 }
 
 .tabButtons {
   display: flex;
   gap: 0.25rem;
+  border-bottom: 1px solid #ddd5c8;
 }
 
 .tab,
 .tabActive {
-  padding: 0.4rem 0.75rem;
-  font-size: 0.85rem;
-  cursor: pointer;
-  border: none;
-  background: none;
-  color: #888;
-  border-radius: 4px;
-}
-
-.tab:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.tabActive {
-  color: #1a1a1a;
-  font-weight: 600;
-  background: rgba(0, 0, 0, 0.08);
-}
-
-.saveBtn {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
   cursor: pointer;
-  background: #1a1a1a;
-  color: white;
   border: none;
+  background: none;
+  color: #8a8278;
+  font-family: inherit;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s;
 }
 
-.saveBtn:hover {
-  background: #333;
+.tab:hover {
+  color: #3a3530;
 }
 
-.saveBtn:disabled {
-  background: #999;
-  cursor: not-allowed;
+.tabActive {
+  color: #3a3530;
+  font-weight: 600;
+  border-bottom-color: #3a3530;
 }
 
-/* Person Selector */
+.tabCount {
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-left: 0.35rem;
+  color: #b5b0a8;
+}
+
+.tabActive .tabCount {
+  color: #8a8278;
+}
+
+/* Control bar (person selector + search) */
+.controlBar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+}
+
+/* Person selector */
 .personSelect {
-  margin-bottom: 1rem;
-  padding: 0.75rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .personSelect label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #8a8278;
 }
 
 .personSelect select {
-  padding: 0.4rem 0.5rem;
+  padding: 0.35rem 0.5rem;
   font-size: 0.9rem;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd5c8;
+  border-radius: 4px;
+  font-family: inherit;
+  background: #fff;
+  color: #3a3530;
 }
 
-/* Toolbar (+ Add buttons) */
+.readOnlyBadge {
+  font-size: 0.75rem;
+  color: #8a8278;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+/* Admin search */
+.adminSearch {
+  flex: 1;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.85rem;
+  border: 1px solid #ddd5c8;
+  border-radius: 4px;
+  font-family: inherit;
+  background: #fff;
+  color: #3a3530;
+  min-width: 0;
+}
+
+.adminSearch:focus {
+  outline: none;
+  border-color: #8a8278;
+}
+
+/* Toolbar */
 .toolbar {
   margin-bottom: 1rem;
 }
 
 .toolbar button {
   padding: 0.5rem 1rem;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   cursor: pointer;
-  background: #1a1a1a;
-  color: white;
+  background: #3a3530;
+  color: #f5f0e8;
   border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  transition: background 0.15s;
 }
 
 .toolbar button:hover {
-  background: #333;
+  background: #524d46;
 }
 
-/* Term / FAQ Cards */
-.termCard {
-  border: 1px solid #e0e0e0;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  position: relative;
+/* Cards (term / FAQ) — collapsible */
+.card {
+  border: 1px solid #ddd5c8;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.15s;
+  overflow: hidden;
 }
 
-.termFields {
+.card:hover {
+  border-color: #b5b0a8;
+}
+
+.cardExpanded {
+  border-color: #b5b0a8;
+}
+
+/* Card header — clickable row */
+.cardHeader {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding-right: 4rem;
-}
-
-.termFields label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.termFields input,
-.termFields select,
-.termFields textarea {
-  padding: 0.5rem;
-  font-size: 0.95rem;
-  border: 1px solid #ccc;
-  font-family: inherit;
-}
-
-.termFields textarea {
-  resize: vertical;
-}
-
-.deleteBtn {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  background: none;
-  border: none;
-  color: #c00;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1rem;
   cursor: pointer;
-  font-size: 0.85rem;
+  user-select: none;
+  gap: 0.75rem;
 }
 
-.deleteBtn:hover {
-  text-decoration: underline;
+.cardHeader:hover {
+  background: rgba(0, 0, 0, 0.015);
 }
 
-/* People / Categories Section */
-.categorySection {
-  margin-top: 1rem;
+.cardTitleWrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
-.categorySection ul {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 0.75rem 0;
+.cardTitle {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #3a3530;
 }
 
-.categorySection li {
+.hasAnswer {
+  font-size: 0.7rem;
+  color: #6a9a5a;
+  font-weight: 400;
+}
+
+.noAnswer {
+  font-size: 0.7rem;
+  color: #b5b0a8;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.untitled {
+  color: #b5b0a8;
+  font-weight: 400;
+}
+
+.cardActions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.35rem 0;
+  flex-shrink: 0;
+}
+
+.chevron {
+  font-size: 1rem;
+  color: #b5b0a8;
+  width: 1.25rem;
+  text-align: center;
+  font-weight: 300;
+}
+
+/* Card body — expanded content */
+.cardBody {
+  padding: 0 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-top: 1px solid #eee8dd;
+}
+
+.cardBody label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.fieldLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8a8278;
+  margin-bottom: 0.2rem;
+  margin-top: 0.75rem;
+  display: block;
+}
+
+.fieldValue {
+  font-size: 0.95rem;
+  color: #3a3530;
+  padding: 0.4rem 0;
+  font-weight: 500;
+}
+
+.cardBody input,
+.cardBody textarea {
+  padding: 0.5rem 0.65rem;
+  font-size: 0.9rem;
+  border: 1px solid #ddd5c8;
+  border-radius: 4px;
+  font-family: inherit;
+  color: #3a3530;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cardBody input:focus,
+.cardBody textarea:focus {
+  outline: none;
+  border-color: #8a8278;
+}
+
+.cardBody textarea {
+  resize: none;
+  overflow: hidden;
+  min-height: 2.5rem;
+}
+
+/* Reorder buttons */
+.reorderBtns {
+  display: inline-flex;
+  gap: 0.15rem;
+}
+
+.reorderBtns button {
+  background: none;
+  border: 1px solid #ddd5c8;
+  border-radius: 3px;
+  color: #8a8278;
+  cursor: pointer;
+  font-size: 0.65rem;
+  line-height: 1;
+  padding: 0.2rem 0.35rem;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.reorderBtns button:hover:not(:disabled) {
+  color: #3a3530;
+  border-color: #8a8278;
+}
+
+.reorderBtns button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Inline delete button (inside card body) */
+.deleteBtnInline {
+  background: none;
+  border: 1px solid rgba(200, 0, 0, 0.15);
+  color: #c44;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: inherit;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  align-self: flex-start;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.deleteBtnInline:hover {
+  color: #c00;
+  background: rgba(200, 0, 0, 0.05);
+  border-color: rgba(200, 0, 0, 0.3);
+}
+
+/* Small delete button for people rows */
+.deleteBtnSmall {
+  background: none;
+  border: none;
+  color: #c5b8a8;
+  cursor: pointer;
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 0.2rem 0.35rem;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.deleteBtnSmall:hover {
+  color: #c00;
+  background: rgba(200, 0, 0, 0.05);
+}
+
+/* People list */
+.peopleList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.personRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  border: 1px solid #ddd5c8;
+  border-radius: 6px;
   font-size: 0.95rem;
 }
 
-.deleteCatBtn {
-  background: none;
-  border: none;
-  color: #c00;
-  cursor: pointer;
-  font-size: 1.1rem;
-  line-height: 1;
+.personRowActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.categorySection form {
+/* Add form */
+.addForm {
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.5rem;
 }
 
-.categorySection input {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
+.addForm input {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #ddd5c8;
+  border-radius: 6px;
   font-size: 0.9rem;
+  font-family: inherit;
+  flex: 1;
+  max-width: 250px;
+  background: #fff;
 }
 
-.categorySection form button {
+.addForm input:focus {
+  outline: none;
+  border-color: #8a8278;
+}
+
+.addForm button {
   padding: 0.5rem 1rem;
   cursor: pointer;
-  background: #1a1a1a;
-  color: white;
+  background: #3a3530;
+  color: #f5f0e8;
   border: none;
+  border-radius: 6px;
   font-size: 0.85rem;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.addForm button:hover {
+  background: #524d46;
 }
 
 /* Empty state */
 .emptyState {
-  color: #888;
+  color: #8a8278;
   font-style: italic;
   padding: 2rem 0;
+  text-align: center;
 }
 
 /* Status messages */
 .error {
   color: #c00;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(200, 0, 0, 0.05);
+  border-radius: 6px;
 }
 
 .success {
-  color: #070;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
+  color: #1a7a1a;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 128, 0, 0.05);
+  border-radius: 6px;
 }
 
-/* Dark mode */
+/* ========== Dark mode ========== */
+:global(html.dark) .loginCard h1,
 :global(html.dark) .container {
   color: #e0e0e0;
 }
 
+:global(html.dark) .loginCard h1 {
+  color: #e0e0e0;
+}
+
+:global(html.dark) .loginSubtitle,
+:global(html.dark) .loggedInAs,
+:global(html.dark) .fieldLabel,
+:global(html.dark) .personSelect label,
+:global(html.dark) .readOnlyBadge,
+:global(html.dark) .tabCount {
+  color: #999;
+}
+
+:global(html.dark) .loggedInAs strong,
+:global(html.dark) .fieldValue,
+:global(html.dark) .cardTitle {
+  color: #e0e0e0;
+}
+
+:global(html.dark) .hasAnswer {
+  color: #5cb85c;
+}
+
+:global(html.dark) .noAnswer {
+  color: #555;
+}
+
 :global(html.dark) .loginForm input,
-:global(html.dark) .termFields input,
-:global(html.dark) .termFields select,
-:global(html.dark) .termFields textarea,
-:global(html.dark) .categorySection input,
-:global(html.dark) .personSelect select {
+:global(html.dark) .cardBody input,
+:global(html.dark) .cardBody textarea,
+:global(html.dark) .personSelect select,
+:global(html.dark) .addForm input,
+:global(html.dark) .adminSearch {
   background: #1a1a1a;
-  border-color: #444;
+  border-color: #333;
   color: #e0e0e0;
 }
 
 :global(html.dark) .loginForm button,
 :global(html.dark) .toolbar button,
-:global(html.dark) .categorySection form button,
+:global(html.dark) .addForm button,
 :global(html.dark) .saveBtn {
   background: #e0e0e0;
   color: #111;
@@ -277,11 +614,21 @@
 
 :global(html.dark) .loginForm button:hover,
 :global(html.dark) .toolbar button:hover,
+:global(html.dark) .addForm button:hover,
 :global(html.dark) .saveBtn:hover {
   background: #ccc;
 }
 
-:global(html.dark) .adminTabs {
+:global(html.dark) .saveBtn:disabled {
+  background: #555;
+  color: #888;
+}
+
+:global(html.dark) .header {
+  border-bottom-color: #333;
+}
+
+:global(html.dark) .tabButtons {
   border-bottom-color: #333;
 }
 
@@ -290,31 +637,103 @@
 }
 
 :global(html.dark) .tab:hover {
-  background: rgba(255, 255, 255, 0.06);
+  color: #e0e0e0;
 }
 
 :global(html.dark) .tabActive {
   color: #e0e0e0;
-  background: rgba(255, 255, 255, 0.1);
+  border-bottom-color: #e0e0e0;
 }
 
-:global(html.dark) .termCard {
+:global(html.dark) .tabActive .tabCount {
+  color: #aaa;
+}
+
+:global(html.dark) .controlBar {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+:global(html.dark) .readOnlyBadge {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+:global(html.dark) .card {
   border-color: #333;
 }
 
-:global(html.dark) .deleteBtn,
-:global(html.dark) .deleteCatBtn {
+:global(html.dark) .card:hover,
+:global(html.dark) .cardExpanded {
+  border-color: #555;
+}
+
+:global(html.dark) .cardHeader:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+:global(html.dark) .cardBody {
+  border-top-color: #333;
+}
+
+:global(html.dark) .untitled {
+  color: #555;
+}
+
+:global(html.dark) .chevron {
+  color: #555;
+}
+
+:global(html.dark) .reorderBtns button {
+  border-color: #333;
+  color: #888;
+}
+
+:global(html.dark) .reorderBtns button:hover:not(:disabled) {
+  color: #e0e0e0;
+  border-color: #666;
+}
+
+:global(html.dark) .deleteBtnInline {
   color: #f55;
+  border-color: rgba(255, 0, 0, 0.15);
+}
+
+:global(html.dark) .deleteBtnInline:hover {
+  color: #f77;
+  background: rgba(255, 0, 0, 0.08);
+  border-color: rgba(255, 0, 0, 0.3);
+}
+
+:global(html.dark) .deleteBtnSmall {
+  color: #555;
+}
+
+:global(html.dark) .deleteBtnSmall:hover {
+  color: #f55;
+  background: rgba(255, 0, 0, 0.08);
+}
+
+:global(html.dark) .personRow {
+  border-color: #333;
+}
+
+:global(html.dark) .logoutBtn {
+  color: #999;
+}
+
+:global(html.dark) .logoutBtn:hover {
+  color: #e0e0e0;
 }
 
 :global(html.dark) .error {
   color: #f55;
+  background: rgba(255, 0, 0, 0.08);
 }
 
 :global(html.dark) .success {
   color: #4c4;
+  background: rgba(0, 200, 0, 0.08);
 }
 
 :global(html.dark) .emptyState {
-  color: #777;
+  color: #666;
 }

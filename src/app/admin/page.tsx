@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { SiteData, Term, FAQEntry } from '@/lib/types'
 import styles from './admin.module.css'
 
-type AdminTab = 'terms' | 'faq' | 'people' | 'categories'
+type AdminTab = 'faq' | 'terms' | 'people'
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false)
@@ -14,8 +14,35 @@ export default function AdminPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [activeTab, setActiveTab] = useState<AdminTab>('terms')
+  const [activeTab, setActiveTab] = useState<AdminTab>('faq')
   const [selectedPerson, setSelectedPerson] = useState('')
+  const [authenticatedPerson, setAuthenticatedPerson] = useState('')
+  const [role, setRole] = useState<'master' | 'person'>('person')
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [adminSearch, setAdminSearch] = useState('')
+
+  const isMaster = role === 'master'
+
+  // --- Auto-resize textarea ---
+  const autoResize = useCallback((el: HTMLTextAreaElement | null) => {
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = el.scrollHeight + 'px'
+  }, [])
+
+  const textareaRef = useCallback((el: HTMLTextAreaElement | null) => {
+    if (el) {
+      autoResize(el)
+    }
+  }, [autoResize])
+
+  function handleTextareaChange(
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+    updater: (value: string) => void
+  ) {
+    updater(e.target.value)
+    autoResize(e.target)
+  }
 
   // --- Auth ---
   async function handleLogin(e: React.FormEvent) {
@@ -27,12 +54,30 @@ export default function AdminPage() {
       body: JSON.stringify({ password }),
     })
     if (res.ok) {
+      const result = await res.json()
       setAuthenticated(true)
+      setAuthenticatedPerson(result.person)
+      setRole(result.role)
+      if (result.role !== 'master') {
+        setSelectedPerson(result.person)
+      }
       setPassword('')
       loadData()
     } else {
       setError('Invalid password')
     }
+  }
+
+  function handleLogout() {
+    setAuthenticated(false)
+    setData(null)
+    setSha('')
+    setAuthenticatedPerson('')
+    setRole('person')
+    setSelectedPerson('')
+    setExpandedId(null)
+    setAdminSearch('')
+    document.cookie = 'admin-session=; path=/; max-age=0'
   }
 
   async function loadData() {
@@ -42,8 +87,16 @@ export default function AdminPage() {
       const siteData = result.dictionary as SiteData
       setData(siteData)
       setSha(result.sha)
+      if (result.person) {
+        setAuthenticatedPerson(result.person)
+        setRole(result.role || 'person')
+      }
       if (!selectedPerson && siteData.people.length > 0) {
-        setSelectedPerson(siteData.people[0])
+        if (result.role === 'master') {
+          setSelectedPerson(siteData.people[0])
+        } else {
+          setSelectedPerson(result.person)
+        }
       }
     } else if (res.status === 401) {
       setAuthenticated(false)
@@ -79,17 +132,49 @@ export default function AdminPage() {
       .replace(/^-|-$/g, '')
   }
 
-  // --- People ---
+  // --- Reorder helpers (master only) ---
+  function moveItem<T>(arr: T[], from: number, to: number): T[] {
+    if (to < 0 || to >= arr.length) return arr
+    const updated = [...arr]
+    const [item] = updated.splice(from, 1)
+    updated.splice(to, 0, item)
+    return updated
+  }
+
+  function moveTermUp(index: number) {
+    if (!data || !isMaster || index === 0) return
+    setData({ ...data, terms: moveItem(data.terms, index, index - 1) })
+  }
+  function moveTermDown(index: number) {
+    if (!data || !isMaster || index >= data.terms.length - 1) return
+    setData({ ...data, terms: moveItem(data.terms, index, index + 1) })
+  }
+  function moveFAQUp(index: number) {
+    if (!data || !isMaster || index === 0) return
+    setData({ ...data, faq: moveItem(data.faq, index, index - 1) })
+  }
+  function moveFAQDown(index: number) {
+    if (!data || !isMaster || index >= data.faq.length - 1) return
+    setData({ ...data, faq: moveItem(data.faq, index, index + 1) })
+  }
+  function movePersonUp(index: number) {
+    if (!data || !isMaster || index === 0) return
+    setData({ ...data, people: moveItem(data.people, index, index - 1) })
+  }
+  function movePersonDown(index: number) {
+    if (!data || !isMaster || index >= data.people.length - 1) return
+    setData({ ...data, people: moveItem(data.people, index, index + 1) })
+  }
+
+  // --- People (master only) ---
   function addPerson(name: string) {
-    if (!data || !name.trim()) return
+    if (!data || !name.trim() || !isMaster) return
     if (data.people.includes(name.trim())) return
-    const updated = { ...data, people: [...data.people, name.trim()] }
-    setData(updated)
-    if (!selectedPerson) setSelectedPerson(name.trim())
+    setData({ ...data, people: [...data.people, name.trim()] })
   }
 
   function removePerson(name: string) {
-    if (!data) return
+    if (!data || !isMaster) return
     if (!confirm(`Remove "${name}"? Their definitions and FAQ answers will be deleted.`)) return
     const updated: SiteData = {
       ...data,
@@ -113,28 +198,29 @@ export default function AdminPage() {
 
   // --- Terms ---
   function addTerm() {
-    if (!data) return
+    if (!data || !isMaster) return
+    const id = `new-term-${Date.now()}`
     const newTerm: Term = {
-      id: `new-term-${Date.now()}`,
+      id,
       name: '',
-      category: data.categories[0] || '',
       definitions: {},
     }
     setData({ ...data, terms: [...data.terms, newTerm] })
+    setExpandedId(id)
   }
 
-  function updateTermField(index: number, field: 'name' | 'category', value: string) {
-    if (!data) return
+  function updateTermName(index: number, value: string) {
+    if (!data || !isMaster) return
     const updated = [...data.terms]
-    updated[index] = { ...updated[index], [field]: value }
-    if (field === 'name') {
-      updated[index].id = generateId(value)
-    }
+    const newId = generateId(value)
+    updated[index] = { ...updated[index], name: value, id: newId }
     setData({ ...data, terms: updated })
+    setExpandedId(newId)
   }
 
   function updateTermDefinition(index: number, person: string, value: string) {
     if (!data) return
+    if (!isMaster && person !== authenticatedPerson) return
     const updated = [...data.terms]
     updated[index] = {
       ...updated[index],
@@ -144,32 +230,33 @@ export default function AdminPage() {
   }
 
   function deleteTerm(index: number) {
-    if (!data) return
-    if (!confirm('Delete this term?')) return
+    if (!data || !isMaster) return
+    if (!confirm(`Delete "${data.terms[index].name || 'this term'}"?`)) return
     setData({ ...data, terms: data.terms.filter((_, i) => i !== index) })
+    setExpandedId(null)
   }
 
   // --- FAQ ---
   function addFAQ() {
-    if (!data) return
-    const newFAQ: FAQEntry = {
-      id: `faq-${Date.now()}`,
-      question: '',
-      answers: {},
-    }
+    if (!data || !isMaster) return
+    const id = `faq-${Date.now()}`
+    const newFAQ: FAQEntry = { id, question: '', answers: {} }
     setData({ ...data, faq: [...data.faq, newFAQ] })
+    setExpandedId(id)
   }
 
   function updateFAQQuestion(index: number, question: string) {
-    if (!data) return
+    if (!data || !isMaster) return
     const updated = [...data.faq]
-    updated[index] = { ...updated[index], question }
-    updated[index].id = generateId(question || `faq-${Date.now()}`)
+    const newId = generateId(question || `faq-${Date.now()}`)
+    updated[index] = { ...updated[index], question, id: newId }
     setData({ ...data, faq: updated })
+    setExpandedId(newId)
   }
 
   function updateFAQAnswer(index: number, person: string, value: string) {
     if (!data) return
+    if (!isMaster && person !== authenticatedPerson) return
     const updated = [...data.faq]
     updated[index] = {
       ...updated[index],
@@ -179,76 +266,87 @@ export default function AdminPage() {
   }
 
   function deleteFAQ(index: number) {
-    if (!data) return
-    if (!confirm('Delete this FAQ?')) return
+    if (!data || !isMaster) return
+    if (!confirm(`Delete "${data.faq[index].question || 'this question'}"?`)) return
     setData({ ...data, faq: data.faq.filter((_, i) => i !== index) })
-  }
-
-  // --- Categories ---
-  function addCategory(name: string) {
-    if (!data || !name.trim()) return
-    if (data.categories.includes(name.trim())) return
-    setData({ ...data, categories: [...data.categories, name.trim()] })
-  }
-
-  function deleteCategory(cat: string) {
-    if (!data) return
-    const usedBy = data.terms.filter((t) => t.category === cat)
-    if (usedBy.length > 0) {
-      alert(`Cannot delete "${cat}" — ${usedBy.length} term(s) still use it.`)
-      return
-    }
-    if (!confirm(`Delete category "${cat}"?`)) return
-    setData({ ...data, categories: data.categories.filter((c) => c !== cat) })
+    setExpandedId(null)
   }
 
   // --- Login Screen ---
   if (!authenticated) {
     return (
-      <div className={styles.container}>
-        <h1>Admin</h1>
-        <form onSubmit={handleLogin} className={styles.loginForm}>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Admin password"
-            autoFocus
-          />
-          <button type="submit">Login</button>
-        </form>
-        {error && <p className={styles.error}>{error}</p>}
+      <div className={styles.loginPage}>
+        <div className={styles.loginCard}>
+          <h1>Cult of Jamie</h1>
+          <p className={styles.loginSubtitle}>Admin</p>
+          <form onSubmit={handleLogin} className={styles.loginForm}>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              autoFocus
+            />
+            <button type="submit">Login</button>
+          </form>
+          {error && <p className={styles.error}>{error}</p>}
+        </div>
       </div>
     )
   }
 
   if (!data) {
     return (
-      <div className={styles.container}>
-        <p>Loading...</p>
+      <div className={styles.loginPage}>
+        <div className={styles.loginCard}>
+          <p>Loading...</p>
+        </div>
       </div>
     )
   }
 
-  // --- Main Editor ---
+  const canEditDefinition = isMaster || selectedPerson === authenticatedPerson
+  const readOnlyStyle = !canEditDefinition
+    ? { opacity: 0.5, cursor: 'not-allowed' as const }
+    : {}
+
+  const tabs: AdminTab[] = isMaster ? ['faq', 'terms', 'people'] : ['faq', 'terms']
+  const query = adminSearch.toLowerCase().trim()
+
+  const filteredTerms = data.terms.map((t, i) => ({ term: t, index: i })).filter(({ term }) => {
+    if (!query) return true
+    const def = term.definitions[selectedPerson] || ''
+    return term.name.toLowerCase().includes(query) || def.toLowerCase().includes(query)
+  })
+
+  const filteredFAQs = data.faq.map((f, i) => ({ faq: f, index: i })).filter(({ faq }) => {
+    if (!query) return true
+    const ans = faq.answers[selectedPerson] || ''
+    return faq.question.toLowerCase().includes(query) || ans.toLowerCase().includes(query)
+  })
+
+  const tabCounts: Record<AdminTab, number> = {
+    terms: data.terms.length,
+    faq: data.faq.length,
+    people: data.people.length,
+  }
+
   return (
     <div className={styles.container}>
-      <h1>Site Editor</h1>
-
-      {error && <p className={styles.error}>{error}</p>}
-      {success && <p className={styles.success}>{success}</p>}
-
-      <div className={styles.adminTabs}>
-        <div className={styles.tabButtons}>
-          {(['terms', 'faq', 'people', 'categories'] as AdminTab[]).map((tab) => (
-            <button
-              key={tab}
-              className={activeTab === tab ? styles.tabActive : styles.tab}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+      <div className={styles.header}>
+        <div>
+          <h1>Site Editor</h1>
+          <p className={styles.loggedInAs}>
+            {isMaster ? (
+              <>Logged in as <strong>Master</strong></>
+            ) : (
+              <>Logged in as <strong>{authenticatedPerson}</strong></>
+            )}
+            {' · '}
+            <button className={styles.logoutBtn} onClick={handleLogout}>
+              Logout
             </button>
-          ))}
+          </p>
         </div>
         <button
           className={styles.saveBtn}
@@ -259,140 +357,317 @@ export default function AdminPage() {
         </button>
       </div>
 
-      {/* Person selector for Terms and FAQ tabs */}
-      {(activeTab === 'terms' || activeTab === 'faq') && (
-        <div className={styles.personSelect}>
-          <label>
-            Editing as:
-            <select
-              value={selectedPerson}
-              onChange={(e) => setSelectedPerson(e.target.value)}
-            >
-              {data.people.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      )}
+      {error && <p className={styles.error}>{error}</p>}
+      {success && <p className={styles.success}>{success}</p>}
 
-      {/* Terms Tab */}
-      {activeTab === 'terms' && (
-        <div>
-          <div className={styles.toolbar}>
-            <button onClick={addTerm}>+ Add Term</button>
-          </div>
-          {data.terms.map((term, index) => (
-            <div key={term.id || index} className={styles.termCard}>
-              <div className={styles.termFields}>
-                <label>
-                  Name
-                  <input
-                    type="text"
-                    value={term.name}
-                    onChange={(e) => updateTermField(index, 'name', e.target.value)}
-                  />
-                </label>
-                <label>
-                  Category
-                  <select
-                    value={term.category}
-                    onChange={(e) => updateTermField(index, 'category', e.target.value)}
-                  >
-                    {data.categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  {selectedPerson}&apos;s definition
-                  <textarea
-                    value={term.definitions[selectedPerson] || ''}
-                    onChange={(e) =>
-                      updateTermDefinition(index, selectedPerson, e.target.value)
-                    }
-                    rows={3}
-                    placeholder={`${selectedPerson}'s definition for ${term.name || 'this term'}...`}
-                  />
-                </label>
-              </div>
-              <button
-                className={styles.deleteBtn}
-                onClick={() => deleteTerm(index)}
-              >
-                Delete
-              </button>
-            </div>
+      <div className={styles.adminTabs}>
+        <div className={styles.tabButtons}>
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              className={activeTab === tab ? styles.tabActive : styles.tab}
+              onClick={() => { setActiveTab(tab); setAdminSearch(''); setExpandedId(null) }}
+            >
+              {tab === 'faq' ? 'FAQ' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+              <span className={styles.tabCount}>{tabCounts[tab]}</span>
+            </button>
           ))}
+        </div>
+      </div>
+
+      {/* Person selector + search for Terms and FAQ tabs */}
+      {(activeTab === 'terms' || activeTab === 'faq') && (
+        <div className={styles.controlBar}>
+          <div className={styles.personSelect}>
+            {isMaster ? (
+              <label>
+                Editing as:
+                <select
+                  value={selectedPerson}
+                  onChange={(e) => setSelectedPerson(e.target.value)}
+                >
+                  {data.people.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </label>
+            ) : (
+              <label>
+                Viewing:
+                <select
+                  value={selectedPerson}
+                  onChange={(e) => setSelectedPerson(e.target.value)}
+                >
+                  {data.people.map((p) => (
+                    <option key={p} value={p}>
+                      {p}{p === authenticatedPerson ? ' (you)' : ''}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            {!isMaster && !canEditDefinition && (
+              <span className={styles.readOnlyBadge}>Read-only</span>
+            )}
+          </div>
+          <input
+            className={styles.adminSearch}
+            type="text"
+            placeholder={activeTab === 'terms' ? 'Filter terms...' : 'Filter questions...'}
+            value={adminSearch}
+            onChange={(e) => setAdminSearch(e.target.value)}
+          />
         </div>
       )}
 
       {/* FAQ Tab */}
       {activeTab === 'faq' && (
         <div>
-          <div className={styles.toolbar}>
-            <button onClick={addFAQ}>+ Add Question</button>
-          </div>
-          {data.faq.map((faq, index) => (
-            <div key={faq.id || index} className={styles.termCard}>
-              <div className={styles.termFields}>
-                <label>
-                  Question
-                  <input
-                    type="text"
-                    value={faq.question}
-                    onChange={(e) => updateFAQQuestion(index, e.target.value)}
-                  />
-                </label>
-                <label>
-                  {selectedPerson}&apos;s answer
-                  <textarea
-                    value={faq.answers[selectedPerson] || ''}
-                    onChange={(e) =>
-                      updateFAQAnswer(index, selectedPerson, e.target.value)
-                    }
-                    rows={4}
-                    placeholder={`${selectedPerson}'s answer...`}
-                  />
-                </label>
-              </div>
-              <button
-                className={styles.deleteBtn}
-                onClick={() => deleteFAQ(index)}
-              >
-                Delete
-              </button>
+          {isMaster && (
+            <div className={styles.toolbar}>
+              <button onClick={addFAQ}>+ Add Question</button>
             </div>
-          ))}
-          {data.faq.length === 0 && (
-            <p className={styles.emptyState}>
-              No FAQ questions yet. Click &quot;+ Add Question&quot; to create one.
-            </p>
+          )}
+          {filteredFAQs.map(({ faq, index }) => {
+            const isExpanded = expandedId === faq.id
+            const answer = faq.answers[selectedPerson]
+            const hasAnswer = answer && answer.trim().length > 0
+            return (
+              <div
+                key={faq.id || index}
+                className={`${styles.card} ${isExpanded ? styles.cardExpanded : ''}`}
+              >
+                <div
+                  className={styles.cardHeader}
+                  onClick={() => setExpandedId(isExpanded ? null : faq.id)}
+                >
+                  <div className={styles.cardTitleWrap}>
+                    <span className={styles.cardTitle}>
+                      {faq.question || <em className={styles.untitled}>Untitled question</em>}
+                    </span>
+                    {!isExpanded && (
+                      <span className={hasAnswer ? styles.hasAnswer : styles.noAnswer}>
+                        {hasAnswer ? `${selectedPerson} answered` : `No answer from ${selectedPerson}`}
+                      </span>
+                    )}
+                  </div>
+                  <div className={styles.cardActions}>
+                    {isMaster && (
+                      <span className={styles.reorderBtns}>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); moveFAQUp(index) }}
+                          disabled={index === 0}
+                          title="Move up"
+                        >&#9650;</button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); moveFAQDown(index) }}
+                          disabled={index === data.faq.length - 1}
+                          title="Move down"
+                        >&#9660;</button>
+                      </span>
+                    )}
+                    <span className={styles.chevron}>{isExpanded ? '\u2212' : '+'}</span>
+                  </div>
+                </div>
+                {isExpanded && (
+                  <div className={styles.cardBody}>
+                    {isMaster && (
+                      <label>
+                        <span className={styles.fieldLabel}>Question text</span>
+                        <textarea
+                          ref={textareaRef}
+                          value={faq.question}
+                          onChange={(e) =>
+                            handleTextareaChange(e, (v) => updateFAQQuestion(index, v))
+                          }
+                          rows={1}
+                          autoFocus
+                        />
+                      </label>
+                    )}
+                    <label>
+                      <span className={styles.fieldLabel}>
+                        {selectedPerson}&apos;s answer
+                      </span>
+                      <textarea
+                        ref={textareaRef}
+                        value={faq.answers[selectedPerson] || ''}
+                        onChange={(e) =>
+                          handleTextareaChange(e, (v) =>
+                            updateFAQAnswer(index, selectedPerson, v)
+                          )
+                        }
+                        rows={1}
+                        placeholder={
+                          canEditDefinition
+                            ? `Write ${selectedPerson}'s answer...`
+                            : `${selectedPerson} hasn't answered yet`
+                        }
+                        readOnly={!canEditDefinition}
+                        style={readOnlyStyle}
+                      />
+                    </label>
+                    {isMaster && (
+                      <button
+                        className={styles.deleteBtnInline}
+                        onClick={() => deleteFAQ(index)}
+                      >
+                        Delete question
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+          {filteredFAQs.length === 0 && query && (
+            <p className={styles.emptyState}>No questions matching &ldquo;{adminSearch}&rdquo;</p>
+          )}
+          {data.faq.length === 0 && !query && (
+            <p className={styles.emptyState}>No FAQ questions yet.</p>
           )}
         </div>
       )}
 
-      {/* People Tab */}
-      {activeTab === 'people' && (
-        <div className={styles.categorySection}>
-          <ul>
-            {data.people.map((person) => (
-              <li key={person}>
-                {person}
-                <button
-                  className={styles.deleteCatBtn}
-                  onClick={() => removePerson(person)}
+      {/* Terms Tab */}
+      {activeTab === 'terms' && (
+        <div>
+          {isMaster && (
+            <div className={styles.toolbar}>
+              <button onClick={addTerm}>+ Add Term</button>
+            </div>
+          )}
+          {filteredTerms.map(({ term, index }) => {
+            const isExpanded = expandedId === term.id
+            const definition = term.definitions[selectedPerson]
+            const hasDef = definition && definition.trim().length > 0
+            return (
+              <div
+                key={term.id || index}
+                className={`${styles.card} ${isExpanded ? styles.cardExpanded : ''}`}
+              >
+                <div
+                  className={styles.cardHeader}
+                  onClick={() => setExpandedId(isExpanded ? null : term.id)}
                 >
-                  &times;
-                </button>
-              </li>
+                  <div className={styles.cardTitleWrap}>
+                    <span className={styles.cardTitle}>
+                      {term.name || <em className={styles.untitled}>Untitled term</em>}
+                    </span>
+                    {!isExpanded && (
+                      <span className={hasDef ? styles.hasAnswer : styles.noAnswer}>
+                        {hasDef ? `${selectedPerson} defined` : `No definition from ${selectedPerson}`}
+                      </span>
+                    )}
+                  </div>
+                  <div className={styles.cardActions}>
+                    {isMaster && (
+                      <span className={styles.reorderBtns}>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); moveTermUp(index) }}
+                          disabled={index === 0}
+                          title="Move up"
+                        >&#9650;</button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); moveTermDown(index) }}
+                          disabled={index === data.terms.length - 1}
+                          title="Move down"
+                        >&#9660;</button>
+                      </span>
+                    )}
+                    <span className={styles.chevron}>{isExpanded ? '\u2212' : '+'}</span>
+                  </div>
+                </div>
+                {isExpanded && (
+                  <div className={styles.cardBody}>
+                    {isMaster && (
+                      <label>
+                        <span className={styles.fieldLabel}>Term name</span>
+                        <input
+                          type="text"
+                          value={term.name}
+                          onChange={(e) => updateTermName(index, e.target.value)}
+                          autoFocus
+                        />
+                      </label>
+                    )}
+                    <label>
+                      <span className={styles.fieldLabel}>
+                        {selectedPerson}&apos;s definition
+                      </span>
+                      <textarea
+                        ref={textareaRef}
+                        value={term.definitions[selectedPerson] || ''}
+                        onChange={(e) =>
+                          handleTextareaChange(e, (v) =>
+                            updateTermDefinition(index, selectedPerson, v)
+                          )
+                        }
+                        rows={1}
+                        placeholder={
+                          canEditDefinition
+                            ? `Write ${selectedPerson}'s definition...`
+                            : `${selectedPerson} hasn't written a definition yet`
+                        }
+                        readOnly={!canEditDefinition}
+                        style={readOnlyStyle}
+                      />
+                    </label>
+                    {isMaster && (
+                      <button
+                        className={styles.deleteBtnInline}
+                        onClick={() => deleteTerm(index)}
+                      >
+                        Delete term
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+          {filteredTerms.length === 0 && query && (
+            <p className={styles.emptyState}>No terms matching &ldquo;{adminSearch}&rdquo;</p>
+          )}
+          {data.terms.length === 0 && !query && (
+            <p className={styles.emptyState}>No terms yet.</p>
+          )}
+        </div>
+      )}
+
+      {/* People Tab (master only) */}
+      {activeTab === 'people' && isMaster && (
+        <div>
+          <div className={styles.peopleList}>
+            {data.people.map((person, index) => (
+              <div key={person} className={styles.personRow}>
+                <span>{person}</span>
+                <div className={styles.personRowActions}>
+                  <span className={styles.reorderBtns}>
+                    <button
+                      onClick={() => movePersonUp(index)}
+                      disabled={index === 0}
+                      title="Move up"
+                    >&#9650;</button>
+                    <button
+                      onClick={() => movePersonDown(index)}
+                      disabled={index === data.people.length - 1}
+                      title="Move down"
+                    >&#9660;</button>
+                  </span>
+                  <button
+                    className={styles.deleteBtnSmall}
+                    onClick={() => removePerson(person)}
+                    title={`Remove ${person}`}
+                  >
+                    &times;
+                  </button>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
           <form
+            className={styles.addForm}
             onSubmit={(e) => {
               e.preventDefault()
               const input = (e.target as HTMLFormElement).elements.namedItem(
@@ -403,39 +678,7 @@ export default function AdminPage() {
             }}
           >
             <input name="newPerson" type="text" placeholder="New person name" />
-            <button type="submit">Add Person</button>
-          </form>
-        </div>
-      )}
-
-      {/* Categories Tab */}
-      {activeTab === 'categories' && (
-        <div className={styles.categorySection}>
-          <ul>
-            {data.categories.map((cat) => (
-              <li key={cat}>
-                {cat}
-                <button
-                  className={styles.deleteCatBtn}
-                  onClick={() => deleteCategory(cat)}
-                >
-                  &times;
-                </button>
-              </li>
-            ))}
-          </ul>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault()
-              const input = (e.target as HTMLFormElement).elements.namedItem(
-                'newCat'
-              ) as HTMLInputElement
-              addCategory(input.value)
-              input.value = ''
-            }}
-          >
-            <input name="newCat" type="text" placeholder="New category name" />
-            <button type="submit">Add Category</button>
+            <button type="submit">Add</button>
           </form>
         </div>
       )}
