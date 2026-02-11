@@ -1,0 +1,168 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.container h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.loginForm {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.loginForm input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  flex: 1;
+  max-width: 300px;
+}
+
+.loginForm button,
+.toolbar button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+}
+
+.loginForm button:hover,
+.toolbar button:hover {
+  background: #333;
+}
+
+.toolbar button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.termCard {
+  border: 1px solid #e0e0e0;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.termFields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-right: 4rem;
+}
+
+.termFields label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.termFields input,
+.termFields select,
+.termFields textarea {
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  font-family: inherit;
+}
+
+.termFields textarea {
+  resize: vertical;
+}
+
+.deleteBtn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: #c00;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.deleteBtn:hover {
+  text-decoration: underline;
+}
+
+.categorySection {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.categorySection h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.categorySection ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem 0;
+}
+
+.categorySection li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.deleteCatBtn {
+  background: none;
+  border: none;
+  color: #c00;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.categorySection form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.categorySection input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
+
+.categorySection form button {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  font-size: 0.85rem;
+}
+
+.error {
+  color: #c00;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.success {
+  color: #070;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
