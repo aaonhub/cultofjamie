@@ -18,19 +18,10 @@ export default function SiteLayout({ data }: { data: SiteData }) {
   const paramSearch = searchParams.get('q')
   const paramFocus = searchParams.get('focus')
 
-  const initialPerson =
-    paramPerson && data.people.includes(paramPerson)
-      ? paramPerson
-      : data.people[0] || 'Jamie'
-  const initialTab: ActiveTab =
-    paramTab === 'dictionary' ? 'dictionary' : 'faq'
-  const initialSearch = paramSearch || ''
-  const initialFocus = paramFocus || null
-
-  const [selectedPerson, setSelectedPerson] = useState(initialPerson)
-  const [activeTab, setActiveTab] = useState<ActiveTab>(initialTab)
-  const [search, setSearch] = useState(initialSearch)
-  const [focusedId, setFocusedId] = useState<string | null>(initialFocus)
+  const [selectedPerson, setSelectedPerson] = useState(data.people[0] || 'Jamie')
+  const [activeTab, setActiveTab] = useState<ActiveTab>('faq')
+  const [search, setSearch] = useState('')
+  const [focusedId, setFocusedId] = useState<string | null>(null)
 
   // On static pages, searchParams may be empty on first render (hydration) then
   // populate on the next render. Sync state from URL params once they appear.
