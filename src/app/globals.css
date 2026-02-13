@@ -276,6 +276,7 @@ h2 {
 .term-definition {
   display: block;
   color: var(--color-muted);
+  white-space: pre-wrap;
 }
 
 .term-empty {
@@ -298,6 +299,7 @@ h2 {
 .faq-answer {
   color: var(--color-muted);
   line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 .faq-empty {
