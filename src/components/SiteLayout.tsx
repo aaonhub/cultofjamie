@@ -26,6 +26,7 @@ export default function SiteLayout({ data }: { data: SiteData }) {
   // On static pages, searchParams may be empty on first render (hydration) then
   // populate on the next render. Sync state from URL params once they appear.
   const didSyncRef = useRef(false)
+  const shouldScrollInitialFocusRef = useRef(false)
   useLayoutEffect(() => {
     if (didSyncRef.current) return
     // Wait until at least one param is present (searchParams has populated)
@@ -37,6 +38,8 @@ export default function SiteLayout({ data }: { data: SiteData }) {
     const wantSearch = paramSearch || ''
     const wantFocus = paramFocus || null
 
+    // Only auto-scroll when a focus was supplied by the initial URL.
+    shouldScrollInitialFocusRef.current = Boolean(wantFocus)
     setSelectedPerson(wantPerson)
     setActiveTab(wantTab)
     setSearch(wantSearch)
@@ -78,7 +81,7 @@ export default function SiteLayout({ data }: { data: SiteData }) {
   // Scroll to focused element on initial page load (once focusedId is set)
   const didScrollRef = useRef(false)
   useEffect(() => {
-    if (didScrollRef.current || !focusedId) return
+    if (didScrollRef.current || !focusedId || !shouldScrollInitialFocusRef.current) return
     didScrollRef.current = true
     try {
       const el = document.getElementById(focusedId)
