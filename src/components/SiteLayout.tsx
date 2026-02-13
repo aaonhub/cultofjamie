@@ -38,13 +38,13 @@ export default function SiteLayout({ data }: { data: SiteData }) {
     const wantSearch = paramSearch || ''
     const wantFocus = paramFocus || null
 
-    // Only auto-scroll when a focus was supplied by the initial URL.
-    shouldScrollInitialFocusRef.current = Boolean(wantFocus)
+    // Only auto-scroll when a focus came from the initial URL (not after user clicks).
+    shouldScrollInitialFocusRef.current = Boolean(wantFocus && focusedId === null)
     setSelectedPerson(wantPerson)
     setActiveTab(wantTab)
     setSearch(wantSearch)
     setFocusedId(wantFocus)
-  }, [paramPerson, paramTab, paramSearch, paramFocus, data.people])
+  }, [paramPerson, paramTab, paramSearch, paramFocus, data.people, focusedId])
 
   // Track the viewport offset of the focused element before a person switch
   const savedOffsetRef = useRef<number | null>(null)
