@@ -325,18 +325,55 @@ h2 {
   background: #fff;
   z-index: 99999;
   pointer-events: none;
-  animation: flashbang 0.6s ease-out forwards;
+  opacity: 0;
+  transition: opacity 2.5s ease-out; /* Slow fade out by default */
 }
 
-@keyframes flashbang {
+.flashbang-overlay.active {
+  opacity: 1;
+  transition: none; /* Instant whiteout */
+}
+
+/* Grenade element */
+.flashbang-grenade {
+  position: fixed;
+  bottom: -100px;
+  right: -100px;
+  width: 60px;
+  height: auto;
+  z-index: 100000;
+  pointer-events: none;
+  animation: grenade-throw 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes grenade-throw {
   0% {
-    opacity: 0;
+    bottom: -100px;
+    right: -100px;
+    transform: rotate(0deg) scale(0.5);
   }
-  10% {
-    opacity: 1;
+  40% {
+    bottom: 50vh;
+    right: 50vw;
+    transform: translate(50%, 50%) rotate(-720deg) scale(1);
+    animation-timing-function: ease-in;
+  }
+  60% {
+    bottom: 15vh;
+    right: 60vw; /* Bounce away slightly */
+    transform: translate(50%, 50%) rotate(-900deg) scale(0.9);
+    animation-timing-function: ease-out;
+  }
+  80% {
+    bottom: 25vh;
+    right: 62vw;
+    transform: translate(50%, 50%) rotate(-1000deg) scale(0.95);
+    animation-timing-function: ease-in;
   }
   100% {
-    opacity: 0;
+    bottom: 20vh;
+    right: 64vw;
+    transform: translate(50%, 50%) rotate(-1080deg) scale(0.9);
   }
 }
 

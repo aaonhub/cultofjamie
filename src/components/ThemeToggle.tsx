@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
+import { FlashbangSound } from '../lib/FlashbangSound'
 
 export default function ThemeToggle() {
   const [dark, setDark] = useState(true)
@@ -18,23 +19,74 @@ export default function ThemeToggle() {
     }
   }, [])
 
+  const [isExploding, setIsExploding] = useState(false)
+  const soundRef = useRef<FlashbangSound | null>(null)
+
+  useEffect(() => {
+    soundRef.current = new FlashbangSound()
+  }, [])
+
   const flashbang = useCallback(() => {
+    setIsExploding(true)
+
+    // Play throw sound
+    soundRef.current?.playThrow()
+
+    // Create elements
     const overlay = document.createElement('div')
     overlay.className = 'flashbang-overlay'
     document.body.appendChild(overlay)
-    overlay.addEventListener('animationend', () => overlay.remove())
+
+    const grenade = document.createElement('img')
+    grenade.src = '/flashbang.png'
+    grenade.className = 'flashbang-grenade'
+    grenade.style.width = '60px'
+    document.body.appendChild(grenade)
+
+    // Bounce sounds synced with animation (approx)
+    // - 0ms: Throw
+    // - 40% (480ms): First peak
+    // - 60% (720ms): Bounce 1
+    // - 80% (960ms): Bounce 2
+    setTimeout(() => soundRef.current?.playBounce(), 720)
+    setTimeout(() => soundRef.current?.playBounce(), 960)
+
+    // Sequence
+    setTimeout(() => {
+      // 1. Detonate (Screen goes white instantly)
+      soundRef.current?.playExplosion()
+      overlay.classList.add('active')
+      grenade.remove()
+
+      // 2. Switch Theme (while screen is white)
+      setDark(false)
+      document.documentElement.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
+
+      // 3. Start Fade Out
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          overlay.classList.remove('active') // Triggers the 2.5s transition
+
+          // Cleanup after fade
+          setTimeout(() => {
+            overlay.remove()
+            setIsExploding(false)
+          }, 2500)
+        }, 50)
+      })
+    }, 1200) // Match CSS animation duration
   }, [])
 
   function toggle() {
-    const next = !dark
-    setDark(next)
-    if (next) {
+    if (dark) {
+      // Creating light -> Flashbang!
+      flashbang()
+    } else {
+      // Creating dark -> Instant
+      setDark(true)
       document.documentElement.classList.add('dark')
       localStorage.setItem('theme', 'dark')
-    } else {
-      flashbang()
-      document.documentElement.classList.remove('dark')
-      localStorage.setItem('theme', 'light')
     }
   }
 
