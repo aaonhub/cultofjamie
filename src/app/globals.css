@@ -1,7 +1,49 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+/* Tooltip container */
+.theme-toggle-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip text */
+.theme-tooltip {
+  visibility: hidden;
+  background-color: var(--color-text);
+  color: var(--color-bg);
+  text-align: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  /* Position above */
+  left: 50%;
+  transform: translateX(-50%);
+
+  /* Fade in */
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+
+  /* Typography */
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.theme-toggle-wrapper:hover .theme-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
 }
 
 :root {
@@ -315,12 +357,14 @@ h2 {
   z-index: 99999;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 2.5s ease-out; /* Slow fade out by default */
+  transition: opacity 2.5s ease-out;
+  /* Slow fade out by default */
 }
 
 .flashbang-overlay.active {
   opacity: 1;
-  transition: none; /* Instant whiteout */
+  transition: none;
+  /* Instant whiteout */
 }
 
 /* Grenade element */
@@ -341,24 +385,29 @@ h2 {
     right: -100px;
     transform: rotate(0deg) scale(0.5);
   }
+
   40% {
     bottom: 50vh;
     right: 50vw;
     transform: translate(50%, 50%) rotate(-720deg) scale(1);
     animation-timing-function: ease-in;
   }
+
   60% {
     bottom: 15vh;
-    right: 60vw; /* Bounce away slightly */
+    right: 60vw;
+    /* Bounce away slightly */
     transform: translate(50%, 50%) rotate(-900deg) scale(0.9);
     animation-timing-function: ease-out;
   }
+
   80% {
     bottom: 25vh;
     right: 62vw;
     transform: translate(50%, 50%) rotate(-1000deg) scale(0.95);
     animation-timing-function: ease-in;
   }
+
   100% {
     bottom: 20vh;
     right: 64vw;
@@ -368,8 +417,13 @@ h2 {
 
 /* Text fade animation when switching people */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .fade-in {
