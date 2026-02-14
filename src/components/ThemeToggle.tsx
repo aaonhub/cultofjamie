@@ -93,25 +93,20 @@ export default function ThemeToggle() {
   if (!mounted) return null
 
   return (
-    <div className="theme-toggle-wrapper">
-      <button
-        onClick={toggle}
-        aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-        style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '1.25rem',
-          padding: '0.25rem',
-          lineHeight: 1,
-          color: 'var(--color-muted)',
-        }}
-      >
-        {dark ? '\u2600' : '\u263E'}
-      </button>
-      <span className="theme-tooltip">
-        {dark ? 'Light Mode' : 'Dark Mode'}
-      </span>
-    </div>
+    <button
+      onClick={toggle}
+      aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+      style={{
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        fontSize: '1.25rem',
+        padding: '0.25rem',
+        lineHeight: 1,
+        color: 'var(--color-muted)',
+      }}
+    >
+      {dark ? '\u2600' : '\u263E'}
+    </button>
   )
 }
