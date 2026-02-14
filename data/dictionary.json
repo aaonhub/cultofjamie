@@ -12,70 +12,80 @@
       "name": "Belief",
       "definitions": {
         "Ender": "A truth claim about the world which one believes to be true.",
-        "Jamie": "(B)elief: the emotional attachment to an idea. \n\n(b)elief: an opinion. \n\nI don't use capital B, but every time I say \"belief\" I mean the former. I am always referring to an emotional attachment to an idea. If I mean \"an idea\" or \"a thought\" I just say \"here's my opinion\" and will not use the word belief."
+        "Jamie": "(B)elief: the emotional attachment to an idea. \n\n(b)elief: an opinion. \n\nI don't use capital B, but every time I say \"belief\" I mean the former. I am always referring to an emotional attachment to an idea. If I mean \"an idea\" or \"a thought\" I just say \"here's my opinion\" and will not use the word belief.",
+        "Capy": "of course, they arent there at all, by definition.\n\nyou cant believe in something youre experiencing otherwise its a fact, a belief makes up for lack of experience."
       }
     },
     {
       "id": "facts",
       "name": "Facts",
       "definitions": {
-        "Ender": "A truth claim which accurately describes sense perception, both in the content and the literal relationship between thoughts and the 5 main senses."
+        "Ender": "A truth claim which accurately describes sense perception, both in the content and the literal relationship between thoughts and the 5 main senses.",
+        "Capy": "yeah for me what changed that was when i was listening to Jamie's contemplation and he said something like \"Your direct experience is just a FACT\""
       }
     },
     {
       "id": "knowledge",
       "name": "Knowledge",
       "definitions": {
-        "Ender": "Memory (which makes \"self-knowledge\" \"self-memory\", which is an oxymoron)."
+        "Ender": "Memory (which makes \"self-knowledge\" \"self-memory\", which is an oxymoron).",
+        "Capy": "practically, it's whatever you're thinking. knowledge is what we categorize as thinking"
       }
     },
     {
       "id": "self-image",
       "name": "Self Image",
       "definitions": {
-        "Ender": "What one believes oneself to be, which are inherently emotional due to the nature of self-belief."
+        "Ender": "What one believes oneself to be, which are inherently emotional due to the nature of self-belief.",
+        "Capy": "self-image is the result of a belief that you can imagine yourself, which indirectly manifests as negative emotional reactions to thoughts about yourself. \"yourself\" being the descriptions and characteristics you call upon whenever you try to think of what you are."
       }
     },
     {
       "id": "sensory-perception",
       "name": "Sensory Perception",
       "definitions": {
-        "Ender": "Conscious experience occurring now."
+        "Ender": "Conscious experience occurring now.",
+        "Capy": "> To clarify, you're saying there's no separate me, but you're also saying there's no separate anything right?\n\nyes\n\n> There's only sensory perception and nothing else\n\njust what is, \"existence\""
       }
     },
     {
       "id": "past",
       "name": "Past",
       "definitions": {
-        "Ender": "Events which happened previously, but only are subjectively experienced as a thought now (never truly experienced)."
+        "Ender": "Events which happened previously, but only are subjectively experienced as a thought now (never truly experienced).",
+        "Capy": "the memory is now. \"not now\" are unicorns.\n\nmemory cant be equivalent to unicorns because memories are now (otherwise how is it perceived? all perception is now)\n\n\"me who experienced past\" is a unicorn, because it is \"not now.\"\n\nme who experiences memories is just...now."
       }
     },
     {
       "id": "future",
       "name": "Future",
       "definitions": {
-        "Ender": "Events which are expected to happen, but are only subjectively experienced as a thought now (never truly experienced)."
+        "Ender": "Events which are expected to happen, but are only subjectively experienced as a thought now (never truly experienced).",
+        "Capy": "because youre aware of the thought. its self-evident\n\nthe future is a thought just like \"sleep\". thinking about sleep isnt the experience of sleep. thinking of the future isnt the experience of a future. this is because awareness is always directly aware of thoughts. anything saying otherwise is only the implication of thoughts, which you are directly aware of.\n\nawareness cant be symbolized because it is what is appearing as symbols"
       }
     },
     {
       "id": "reality",
       "name": "Reality",
       "definitions": {
-        "Ender": "The existence of sensory perception (this is a panpsychist worldview, Jamie might say \"physical reality\")."
+        "Ender": "The existence of sensory perception (this is a panpsychist worldview, Jamie might say \"physical reality\").",
+        "Capy": "when he says god hes talking about reality/existence/experience itself, and how it operates perfectly fine without the desire, resolve, and effort coming from the assumed separate self that controls or desires things"
       }
     },
     {
       "id": "emotions",
       "name": "Emotions",
       "definitions": {
-        "Ender": "Physical sensations in the body that are internally generated by evaluating sensory perception or thinking."
+        "Ender": "Physical sensations in the body that are internally generated by evaluating sensory perception or thinking.",
+        "Capy": "its ok to feel emotions <3\n\nits true that you cant feel the distinction \"negative emotions\", because it's a thought, not an emotion. thoughts are made of distinctions.\n\nbut its important to remember that thinking \"im not supposed to feel negative emotions\" is not an emotion or an emotional state, its a conceptualization of emotions, aka thinking. the map isnt the territory. \n\ntheres only one feeling; now. the question is what thoughts/beliefs are you currently feeling?"
       }
     },
     {
       "id": "happiness",
       "name": "Happiness",
       "definitions": {
-        "Ender": "The default mode of experience where one has no negative beliefs about oneself that are currently operating."
+        "Ender": "The default mode of experience where one has no negative beliefs about oneself that are currently operating.",
+        "Capy": "love and happiness are not attachment. they are the absence of attachment.\n\nYou can't think/imagine love, or parents. SR is just seeing through that. Emotions and feelings aren't thoughts, so they don't go away, but become much deeper actually."
       }
     },
     {
@@ -83,98 +93,112 @@
       "name": "Anger",
       "definitions": {
         "Ender": "The belief that something has wronged you.",
-        "Jamie": ""
+        "Jamie": "",
+        "Capy": "something like that.\n\nanger probably means you feel like you or someone else is in danger (either now or in the future) and it is the desire to neutralize whatever you believe to be the cause of that danger, so that would be the seeming \"benefit\" of holding up the thought that feels like anger"
       }
     },
     {
       "id": "love",
       "name": "Love",
       "definitions": {
-        "Ender": "Present oneness of experience which facilitates naturally caring and altruistic behavior."
+        "Ender": "Present oneness of experience which facilitates naturally caring and altruistic behavior.",
+        "Capy": "i would normally say love is the desire to be with someone in some capacity. but the desire im talking about is not about attachment"
       }
     },
     {
       "id": "good",
       "name": "Good",
       "definitions": {
-        "Ender": "Evaluating one scenario to be favorable to another (which necessarily stems from not recognizing the oneness of experience, so there is nothing to compare in the first place)."
+        "Ender": "Evaluating one scenario to be favorable to another (which necessarily stems from not recognizing the oneness of experience, so there is nothing to compare in the first place).",
+        "Capy": "positive emotions are experiencing a fulfilled desire, negative is experiencing an unfulfilled desire"
       }
     },
     {
       "id": "bad",
       "name": "Bad",
       "definitions": {
-        "Ender": "Evaluating one scenario to be less favorable to another (which necessarily stems from not recognizing the oneness of experience, so there is nothing to compare in the first place)."
+        "Ender": "Evaluating one scenario to be less favorable to another (which necessarily stems from not recognizing the oneness of experience, so there is nothing to compare in the first place).",
+        "Capy": "positive emotions are experiencing a fulfilled desire, negative is experiencing an unfulfilled desire"
       }
     },
     {
       "id": "like",
       "name": "Like",
       "definitions": {
-        "Ender": "Good in terms of a sensory experience."
+        "Ender": "Good in terms of a sensory experience.",
+        "Capy": "what is a like or dislike outside of memory/knowledge?"
       }
     },
     {
       "id": "dislike",
       "name": "Dislike",
       "definitions": {
-        "Ender": "Bad in terms of a sensory experience."
+        "Ender": "Bad in terms of a sensory experience.",
+        "Capy": "what is a like or dislike outside of memory/knowledge?"
       }
     },
     {
       "id": "observation",
       "name": "Observation",
       "definitions": {
-        "Ender": "The fact of content appearing in awareness."
+        "Ender": "The fact of content appearing in awareness.",
+        "Capy": "> I exist as a human being in the world\n\nThis contradicts the latter part since this is thought. And it gives you the quality of being human, in a world.\n\n> The only thing I can observe is “what I think of me and my qualities”\n\nThere can be observation without thoughts.\n\nIf you are saying your experience entirely consists of \"thinking and qualities\", that might be true depending on how you define those things."
       }
     },
     {
       "id": "interpretation",
       "name": "Interpretation",
       "definitions": {
-        "Ender": "A narrative created by thinking to describe a past event. An incorrect use of interpretation is what leads to the self-image which is often described as \"experiencing things twice\" (once as the event, another time as the interpretation)."
+        "Ender": "A narrative created by thinking to describe a past event. An incorrect use of interpretation is what leads to the self-image which is often described as \"experiencing things twice\" (once as the event, another time as the interpretation).",
+        "Capy": "if there isnt someone who is wrong, or someone that deserves something, or any such interpretation, then there is no hate?"
       }
     },
     {
       "id": "guilt",
       "name": "Guilt",
       "definitions": {
-        "Ender": "The belief that one has caused unnecessary suffering, which encourages the mind to learn to not cause unnecessary suffering (not necessarily tied to self-image)."
+        "Ender": "The belief that one has caused unnecessary suffering, which encourages the mind to learn to not cause unnecessary suffering (not necessarily tied to self-image).",
+        "Capy": "the thought that \"I am disappointing people\" feels like guilt. if u assume its the case u will rightly feel it emotionally"
       }
     },
     {
       "id": "shame",
       "name": "Shame",
       "definitions": {
-        "Ender": "The belief that one is insufficient (tied to self-image)."
+        "Ender": "The belief that one is insufficient (tied to self-image).",
+        "Capy": "Shame, guilt, regret involve feeling bad about something you have done. What is the distinction beyond that?"
       }
     },
     {
       "id": "annoyance",
       "name": "Annoyance",
       "definitions": {
-        "Ender": "The belief that one's current experience could extremely conceivably be better if some process was more efficient (necessarily tied to self-image since it stems from a failure to recognize the oneness of experience)."
+        "Ender": "The belief that one's current experience could extremely conceivably be better if some process was more efficient (necessarily tied to self-image since it stems from a failure to recognize the oneness of experience).",
+        "Capy": "there's like 3 phases, one is that you conceptually don't understand self-realization, second is that you conceptually understand why self-realization makes sense and why it is correct (and then you get annoyed because it still affects you emotionally), and then third doesn't really exist because you're self-realized and that doesn't involve any concepts"
       }
     },
     {
       "id": "frustration",
       "name": "Frustration",
       "definitions": {
-        "Ender": "The belief that efforts are not leading to the intended results (not necessarily tied to self-image)."
+        "Ender": "The belief that efforts are not leading to the intended results (not necessarily tied to self-image).",
+        "Capy": "> I'm wondering if there's a way to operate \"without expectations.\" \n\nAlso, this is an expectation! There's only one way to operate, which is the way you're operating now. isn't that relieving? The frustration is the desire to operate in two ways, because it is impossible."
       }
     },
     {
       "id": "physical-time-calendar-time",
       "name": "Physical Time / Calendar Time",
       "definitions": {
-        "Ender": "The sequential passage of events that is not directly experienced."
+        "Ender": "The sequential passage of events that is not directly experienced.",
+        "Capy": "time is specifically concept of \"not now\""
       }
     },
     {
       "id": "intelligence",
       "name": "Intelligence",
       "definitions": {
-        "Ender": "The ability to recognize and correct errors in thinking."
+        "Ender": "The ability to recognize and correct errors in thinking.",
+        "Capy": "> I fail at solving the question, so I perceive the lack of intelligence.\n\nIt's true that you weren't able to solve the question. And you say that this perception is the lack of intelligence.\n\nSo then, if the question never appeared, you wouldn't be able to perceive that lack of intelligence anymore. Does that mean your intelligence is equivalent to the perception of the question? Did the question create a lack of intelligence? Or is that something you imagine after the fact? \n\nIt seems like your mind is constantly calibrating how intelligent you are through the people and things you interact with, but you are already exactly as intelligent as you always are, so why the need to calculate it in your imagination by remembering everything you interacted with?"
       }
     }
   ],
@@ -183,14 +207,16 @@
       "id": "what-is-self-realization",
       "question": "What is self-realization?",
       "answers": {
-        "Jamie": "What self realization is on a practical level is the cessation of emotional relationship to self-imagination and thought. This occurs because there is a realization there is no experience of past or future and that there is actually no self-identity or \"Me\" that exists at all, despite us acting and thinking there is one previously."
+        "Jamie": "What self realization is on a practical level is the cessation of emotional relationship to self-imagination and thought. This occurs because there is a realization there is no experience of past or future and that there is actually no self-identity or \"Me\" that exists at all, despite us acting and thinking there is one previously.",
+        "Capy": "the goal in self-realization is really to just pull \"you\" out of past and future, that sense of time and continuity"
       }
     },
     {
       "id": "does-sr-happen-all-at-once-or-gradually",
       "question": "Does self-realization happen all at once or gradually?",
       "answers": {
-        "Jamie": "He is completely correct: self-realization is an instantaneous and permanent event that is realized now and happens now and then persists for every now that is experienced. What he means and what I mean is that there is absolutely no other time that things occur. This is tremendously hard to reconcile because we view our lives as an 80+ year monolith of information. You have years and years of childhood and years and years of future life you will experience. I am saying, and he is saying, that you don't. You have exactly present perception. This includes present memory, which is those other things. You have present perception, which includes present memory. Present memory is your past and your projected imagination of the future."
+        "Jamie": "He is completely correct: self-realization is an instantaneous and permanent event that is realized now and happens now and then persists for every now that is experienced. What he means and what I mean is that there is absolutely no other time that things occur. This is tremendously hard to reconcile because we view our lives as an 80+ year monolith of information. You have years and years of childhood and years and years of future life you will experience. I am saying, and he is saying, that you don't. You have exactly present perception. This includes present memory, which is those other things. You have present perception, which includes present memory. Present memory is your past and your projected imagination of the future.",
+        "Capy": "for it to be reversed you would have to have someone gaslight you or brainwash you into creating and believing in like an image of yourself or something. Its kind of like trying to convince an adult to believe in Santa Claus. Self-realization is not something you gain, it is your default state."
       }
     },
     {
@@ -198,105 +224,120 @@
       "question": "What triggered your self-realization?",
       "answers": {
         "Jamie": "The phrase itself makes perfect sense and is a great 'meditation', but at the time I didn't understand it conceptually at all as it was completely new, I was just talking to myself and thinking and it came out, but it triggered the physical event, and afterwards it made complete sense in hindsight. It felt more like someone saying \"look, there's the moon\" and consciously I was like \"ooooh...moon\" but your brain is like \"ok that's it we're becoming an astronaut but he'll learn that info later\". Not like there is secret info, but it felt like your own conscious knowledge is extremely low level, but that small insight was enough to trigger a much deeper and more intelligent brain structure to click and become aware of something.",
-        "Ender": "Just going to share the thoughts I had right before the realization. Visual perception does not contain objects. You do not exist in visual perception because all that exists is visual qualia (this was while I was looking at a computer screen so it felt incredibly intuitive). It is not possible to see yourself, all you see is vision. Thoughts are essentially just another sense perception right? [click] Oh all that exists in thought is just thought qualia. You can't think about yourself you can only think about thoughts, and clearly you aren't a thought so you can't think about yourself."
+        "Ender": "Just going to share the thoughts I had right before the realization. Visual perception does not contain objects. You do not exist in visual perception because all that exists is visual qualia (this was while I was looking at a computer screen so it felt incredibly intuitive). It is not possible to see yourself, all you see is vision. Thoughts are essentially just another sense perception right? [click] Oh all that exists in thought is just thought qualia. You can't think about yourself you can only think about thoughts, and clearly you aren't a thought so you can't think about yourself.",
+        "Capy": "Structurally it seems very similar to how it happened to me, I heard a specific line from one of the videos and then it triggered something in my experience mid contemplation. I can also relate to the \"light\" feeling in your head/experience. Give it a few days to settle and see how you feel."
       }
     },
     {
       "id": "do-you-still-experience-stress",
       "question": "Do you still experience stress or emotions after self-realization?",
       "answers": {
-        "Jamie": "There isn't an emotional relationship to an idea of presenting or what anyone is saying, but there is a focus/tension in relationship to the actual event as it's happening. Like there is a \"stress\" that I experience in the same way that asking someone out I'd probably be nervous. This isn't accompanied by anxiety or an emotion, but is a tense physical event containing uncertainty that you have to pay a lot of attention to because you perceive it as consequential/important. While in this particular case there isn't any emotional characteristic, it's not like you never experience emotions, it's that emotions occur when they are necessary in response to events that are currently happening, not towards imagined outcomes or events."
+        "Jamie": "There isn't an emotional relationship to an idea of presenting or what anyone is saying, but there is a focus/tension in relationship to the actual event as it's happening. Like there is a \"stress\" that I experience in the same way that asking someone out I'd probably be nervous. This isn't accompanied by anxiety or an emotion, but is a tense physical event containing uncertainty that you have to pay a lot of attention to because you perceive it as consequential/important. While in this particular case there isn't any emotional characteristic, it's not like you never experience emotions, it's that emotions occur when they are necessary in response to events that are currently happening, not towards imagined outcomes or events.",
+        "Capy": "well i dont know if i have enough experience to know what exactly jamie was talking about, but negative emotions after SR are all situational and they are specific to situations. If there is shame or anger, it is not about something or someone, it is a reaction to a situation. The shame in SR is a specific type of shame which is like \"I don't want to hurt someone so I should stop doing this right now.\" Unpleasant emotions tend to be an assimilation of another person's self-image or pain"
       }
     },
     {
       "id": "is-there-a-self",
       "question": "Is there a self?",
       "answers": {
-        "Jamie": "I think that what you are looking at is really insightful and very accurate. The only thing I'd add on afterwards is saying \"is there even that 'Me' at the end of the search?\" Is there definitively anything at all at the end of the road you call yourself?"
+        "Jamie": "I think that what you are looking at is really insightful and very accurate. The only thing I'd add on afterwards is saying \"is there even that 'Me' at the end of the search?\" Is there definitively anything at all at the end of the road you call yourself?",
+        "Capy": "because everything you learn about santa is about santa. you dont figure out what the separate self is, you realize it isnt there, in the same way you dont figure out what santa is, you realize it isnt there. thats why a baby doesnt need knowledge to disbelieve in santa. it already isnt there. the knowledge, by being there, covers up that it isnt there\n\nalso theres no such thing as having knowledge of something non-existent or impossible. at that point you're not learning about santa you're just saying \"that doesnt exist\""
       }
     },
     {
       "id": "what-is-loneliness",
       "question": "What is loneliness?",
       "answers": {
-        "Jamie": "Straightforwardly, loneliness is the desire for meaningful companionship, it is - importantly - not the lack of relationship. You are lonely when you want something, not when you hypothetically lack something."
+        "Jamie": "Straightforwardly, loneliness is the desire for meaningful companionship, it is - importantly - not the lack of relationship. You are lonely when you want something, not when you hypothetically lack something.",
+        "Capy": "loneliness is sadness in a relationship, which means lack of love in regards to a relationship"
       }
     },
     {
       "id": "can-experience-be-expressed-in-words",
       "question": "Can experience truly be expressed in words?",
       "answers": {
-        "Jamie": "In my experience, nearly all of feelings of \"I wanted to express something but I couldn't\" is usually related to thinking. It is, in my experience, basically impossible to have any sensory experience that can't be communicated in basic thought other than other thought."
+        "Jamie": "In my experience, nearly all of feelings of \"I wanted to express something but I couldn't\" is usually related to thinking. It is, in my experience, basically impossible to have any sensory experience that can't be communicated in basic thought other than other thought.",
+        "Capy": "You experience taste, but you don't experience the word which describes the taste. You have to remember your knowledge of words and experiences to find the word that describes the taste, that is the only part that memory plays. You are using memory to find a word which describes something that is not memory."
       }
     },
     {
       "id": "where-do-thoughts-come-from",
       "question": "Where do thoughts originate?",
       "answers": {
-        "Jamie": "The point to be made is that there is no first principle, which originates itself in thought, where does that thought come from? From where does that symbol or identification originate other than thought, and what is that?"
+        "Jamie": "The point to be made is that there is no first principle, which originates itself in thought, where does that thought come from? From where does that symbol or identification originate other than thought, and what is that?",
+        "Capy": "Go into it, then come out of it. Anchor yourself by going back to no thoughts. From no thoughts ask \"where did the thoughts I was just having go?\" Look for it in \"void.\" Then if you wanna get a better look at what you were experiencing again, go into thoughts again. Then remove yourself again. Look at how it appears and disappears."
       }
     },
     {
       "id": "does-understanding-evolve-after-sr",
       "question": "Does understanding continue to evolve after self-realization?",
       "answers": {
-        "Jamie": "I mean I think it's just a continual progression of the same thing. While it's true that self-realization itself is phenomenological, the explanation of experience to other people afterwards and your own ideas about life are intellectual, so it's been difficult to evolve those concepts to share. An example is that I originally communicated the idea like one week after it happened as \"cutting the umbilical cord between thought and emotion\" and a lot of people thought it was like a mental break \"are you ok?\" type of thing. After a while I communicated the same thing as something like \"the cessation of emotional relationship to self-imagination\" which is pretty accurate, but I feel like maybe only around now I'd be comfortable being like \"ok, these expressions have settled with me long enough to write them into a book to share without wanting to change them significantly later\"."
+        "Jamie": "I mean I think it's just a continual progression of the same thing. While it's true that self-realization itself is phenomenological, the explanation of experience to other people afterwards and your own ideas about life are intellectual, so it's been difficult to evolve those concepts to share. An example is that I originally communicated the idea like one week after it happened as \"cutting the umbilical cord between thought and emotion\" and a lot of people thought it was like a mental break \"are you ok?\" type of thing. After a while I communicated the same thing as something like \"the cessation of emotional relationship to self-imagination\" which is pretty accurate, but I feel like maybe only around now I'd be comfortable being like \"ok, these expressions have settled with me long enough to write them into a book to share without wanting to change them significantly later\".",
+        "Capy": "I had a very good understanding of metaphysics and spirituality and all those concepts, but it was just understanding. And, I did realize it for myself to a certain degree, but I still wasn't enlightened/self-realized. It is absolutely insane the amount of self-deception that can occur, you have very very smart people who just get stuck to understanding forever. Enlightenment/self-realization is just one specific insight/recontextualization and then you're done"
       }
     },
     {
       "id": "why-dont-you-need-a-self-image",
       "question": "Why don't you need a self-image?",
       "answers": {
-        "Jamie": "The reason you don't need a self-image is because you don't need to imagine who you are. You are experiencing what you are every single moment of your life right now."
+        "Jamie": "The reason you don't need a self-image is because you don't need to imagine who you are. You are experiencing what you are every single moment of your life right now.",
+        "Capy": "self-image is the result of a belief that you can imagine yourself, which indirectly manifests as negative emotional reactions to thoughts about yourself. \"yourself\" being the descriptions and characteristics you call upon whenever you try to think of what you are."
       }
     },
     {
       "id": "how-do-i-engage-with-sr",
       "question": "How do I engage with self-realization?",
       "answers": {
-        "Jamie": "You will feel whatever you feel as you figure it out. They are both the same, but to be more practical, yes you need to engage. The only reason I'm saying they're the same is because your whole life is in service of self-realization and self-actualization. If you use the metaphor of a sunflower, if I plant the seed, it grows into the flower. This is inevitable. If I give it a consciousness, perhaps it has some greater freedom, volatility, energy efficiency, etc, but it becomes a sunflower no matter what it does, that tape runs its course. You are the same way and whether you get it or not, you will act yourself out as a human being."
+        "Jamie": "You will feel whatever you feel as you figure it out. They are both the same, but to be more practical, yes you need to engage. The only reason I'm saying they're the same is because your whole life is in service of self-realization and self-actualization. If you use the metaphor of a sunflower, if I plant the seed, it grows into the flower. This is inevitable. If I give it a consciousness, perhaps it has some greater freedom, volatility, energy efficiency, etc, but it becomes a sunflower no matter what it does, that tape runs its course. You are the same way and whether you get it or not, you will act yourself out as a human being.",
+        "Capy": "> Any advice on what to do? Or should I just keep inquiring into these beliefs / my experience?\n\ni would just focus on the reality of whatever you're inquiring about, since that's the only thing relevant to any inquiry. the claim that you're making is that there is a thought or statement which describes you, or, is you. first figure out how you know that or what the experience of that is. when or where did the proof come about?\n\nIs there you, and what you are? (me = body/bad/arrogant/etc.)\n\nor is there just what is?"
       }
     },
     {
       "id": "do-you-experience-grief-or-loss",
       "question": "Do you experience grief or loss?",
       "answers": {
-        "Jamie": "It's analogous in my own experience to how I used to and presumably most people would experience a dream. In a dream something really bad might happen, you get really scared, then you wake up and in 5 seconds you're completely fine. Why don't you have lingering trauma? Because you intuit \"that wasn't real, it was a dream\" and your brain automatically discounts it. If you say \"I am going through a breakup, and the image of this person in my mind hurts\" it is different for me (now) because there is not the \"added on\" part of hurt. Without an imagined personal identity that was hurt by another person's death, there is no change in your identity or imagination of your life, just an immediate change to what is happening in front of you. You can love someone in their last moments, then they are gone, and there is no sadness, just an absence of love."
+        "Jamie": "It's analogous in my own experience to how I used to and presumably most people would experience a dream. In a dream something really bad might happen, you get really scared, then you wake up and in 5 seconds you're completely fine. Why don't you have lingering trauma? Because you intuit \"that wasn't real, it was a dream\" and your brain automatically discounts it. If you say \"I am going through a breakup, and the image of this person in my mind hurts\" it is different for me (now) because there is not the \"added on\" part of hurt. Without an imagined personal identity that was hurt by another person's death, there is no change in your identity or imagination of your life, just an immediate change to what is happening in front of you. You can love someone in their last moments, then they are gone, and there is no sadness, just an absence of love.",
+        "Capy": "without thought, there is \"you\" which is experiencing something that can never experience loss"
       }
     },
     {
       "id": "what-is-the-ego",
       "question": "What is the ego and how does it relate to love?",
       "answers": {
-        "Jamie": "The ultra-nutshell version is that your natural mode of operation is wanting to love. This is the complete fulfilment of intelligent function in relationship to your life as it plays out in front of you. Self-image or our ego is a secondary carbon copy of this literal brain function that is the belief we are an actual \"other\" person in thought. This causes a secondary version of the previous emotion set that demands we create conditions under which other people love us. This is an introduction to self-inquiry, which is the question: \"if you can see this, then how do you know other people love you other than your own invented standard?\""
+        "Jamie": "The ultra-nutshell version is that your natural mode of operation is wanting to love. This is the complete fulfilment of intelligent function in relationship to your life as it plays out in front of you. Self-image or our ego is a secondary carbon copy of this literal brain function that is the belief we are an actual \"other\" person in thought. This causes a secondary version of the previous emotion set that demands we create conditions under which other people love us. This is an introduction to self-inquiry, which is the question: \"if you can see this, then how do you know other people love you other than your own invented standard?\"",
+        "Capy": "it will keep going back to this recursion because the self-image is always a recursion, so go figure\n\n> \"me from a moment ago thinking about me a moment ago\""
       }
     },
     {
       "id": "what-is-the-root-of-discontent",
       "question": "What is the root of discontent?",
       "answers": {
-        "Jamie": "It's a relationship with your past, present and future. You feel discontent in the present because there is a previous \"wrong\" or \"insufficiency\" you want to correct, improve or achieve. This creates a present demand in the brain to acquire, achieve, or overcome something."
+        "Jamie": "It's a relationship with your past, present and future. You feel discontent in the present because there is a previous \"wrong\" or \"insufficiency\" you want to correct, improve or achieve. This creates a present demand in the brain to acquire, achieve, or overcome something.",
+        "Capy": "Past and future is equivalent to worry.\n\nWorrying about the past and future is the same as believing in past and future. It's the same idea/thought/belief.\n\nOnly what is in past and future can worry about past and future.\n\nWhy worry about thinking presently?"
       }
     },
     {
       "id": "is-ambition-bad",
       "question": "Is ambition bad?",
       "answers": {
-        "Jamie": "The beliefs an individual has don't make everything make sense, they try to make sense of things through forcing a relationship of \"I am not sufficient\" ----> \"my current experience\" -----> \"rectifying insufficiency with perfect solution\". An example with your mention of the need to be successful is not that there's anything wrong with being an athlete, or being a movie star, or being a successful business person, the only problem is the ongoing algorithmic brain function that operates constantly demanding it, which is ambition, anxiety, restlessness, and anger at your own failure to live up to your \"imagined\" solution to the problem. The problem in this case being not that you couldn't make more money or be in better shape and that would be cool, it is the artificial demand that has been invented by the brain that believes it is \"fixing\" something in time when it isn't."
+        "Jamie": "The beliefs an individual has don't make everything make sense, they try to make sense of things through forcing a relationship of \"I am not sufficient\" ----> \"my current experience\" -----> \"rectifying insufficiency with perfect solution\". An example with your mention of the need to be successful is not that there's anything wrong with being an athlete, or being a movie star, or being a successful business person, the only problem is the ongoing algorithmic brain function that operates constantly demanding it, which is ambition, anxiety, restlessness, and anger at your own failure to live up to your \"imagined\" solution to the problem. The problem in this case being not that you couldn't make more money or be in better shape and that would be cool, it is the artificial demand that has been invented by the brain that believes it is \"fixing\" something in time when it isn't.",
+        "Capy": "‏‏‎ ‎\nSo, you don't lose ambition or desire per say, but all that you desire is just exactly what is occurring right now, because that is the only thing you CAN desire. The thought \"I want this\", and then the actions that come after that are all you desire, because that is literally the only thing that exists in your experience. There is a very visceral realization that you can't desire something that doesn't exist in your experience, it's just impossible. It is seen that the desire for something is something you just completely willingly came up with, and the pursuing of that is something you are also willingly creating, and the feeling of desiring and creating is all that is desired and can be desired.\n\nExistentially, you can't desire any THING, because to desire something it must not exist in your experience first. So, literally, by definition, all desires are about something that does not exist in your experience. So then, how are you desiring something that doesn't exist? Thought! If something is in your experience right now, you cannot desire it, so it becomes a catch-22. Everything that can be sought exists now. The only thing to be sought is purely just the action of seeking something, which is of course redundant to seek. The very action of seeking is all that you want, and so in a sense, there is nothing to seek aside from your attempt to seek something, and then this is where the idea of \"the enlightened person has no desires\" comes from.\n\nThis is not to say that desire is bad or redundant, but desire itself is recontextualized into something like a pleasant thought form that you are deciding to create. It's like daydreaming, or thinking of a cute animal, or thinking about a really beautiful picture you saw the other day. It can become unpleasant (current you reacts avoidantly) when you mix it with a belief that you are located inside that desire."
       }
     },
     {
       "id": "anger-vs-frustration",
       "question": "What is the difference between anger and frustration?",
       "answers": {
-        "Jamie": "I think the best analogy is that I don't ever experience anger related to ideas, but you do still experience frustration, which is a strong energetic demand from your brain to try to communicate an important idea you don't think another person is understanding. In the sense that if you are angry it is because you think another person is saying/doing something harmful, whereas if you are frustrated there is no emotion, but a forceful effort of communication to express the other person is not understanding you. Being angry feels like anger obviously, but being frustrated exclusively is just heightened energy towards a particular focus, like a dog who wants to get out of the car so it can run around."
+        "Jamie": "I think the best analogy is that I don't ever experience anger related to ideas, but you do still experience frustration, which is a strong energetic demand from your brain to try to communicate an important idea you don't think another person is understanding. In the sense that if you are angry it is because you think another person is saying/doing something harmful, whereas if you are frustrated there is no emotion, but a forceful effort of communication to express the other person is not understanding you. Being angry feels like anger obviously, but being frustrated exclusively is just heightened energy towards a particular focus, like a dog who wants to get out of the car so it can run around.",
+        "Capy": "depends lol\n\nthought process could be like: \"the 100 previous times where i gave a calm response didnt work, maybe anger is warranted\"\n\nto be fair it doesnt look like he is angry at anyone specifically, just \"people who ask that all the time\", and he basically goes back to calm right when hes done, so just looks like genuine frustration or something, not a grudge"
       }
     },
     {
       "id": "present-moment",
       "question": "What does it mean that everything is happening now?",
       "answers": {
-        "Jamie": "My understanding, and to whatever extent experience, is that in a strange and very unintuitive way everything feeds into now. The point of the phrase and what it represents conceptually is there is nothing else to feed into now. Ten years ago it was experienced by you as \"Now\". Right now you are experiencing \"Now\". In ten years you will experience that moment in time as \"Now\". You cannot experience \"everything feeds into now\" there is no other thing than now. The one and only thing in existence to you is present experience."
+        "Jamie": "My understanding, and to whatever extent experience, is that in a strange and very unintuitive way everything feeds into now. The point of the phrase and what it represents conceptually is there is nothing else to feed into now. Ten years ago it was experienced by you as \"Now\". Right now you are experiencing \"Now\". In ten years you will experience that moment in time as \"Now\". You cannot experience \"everything feeds into now\" there is no other thing than now. The one and only thing in existence to you is present experience.",
+        "Capy": "yeah, thoughts appear in our experience similar to a stage with many props and actors. everything has to occur together on the same singular stage, which is now. if its not happening together, it is absent, and so it isnt there at all.\n\nwhenever you're thinking, you can imagine it as looking at a whiteboard in the present moment that is describing things. the world or reality or \"now\" gets immersed in its own appearance of divisions, but it is all appearing on the \"same stage\" of now. like a whiteboard which says \"past and future\" requires both words \"past\" and \"future\" to appear together on the same singular whiteboard."
       }
     }
   ]
