@@ -138,28 +138,18 @@ main {
   align-self: start;
 }
 
-.person-sidebar-label {
-  display: block;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-muted);
-  margin-bottom: 0.5rem;
-  text-align: center;
-}
-
 .person-sidebar ul {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.15rem;
 }
 
 .person-sidebar button {
   background: none;
-  border: 1px solid var(--color-border);
+  border: none;
   cursor: pointer;
   font-family: var(--font-serif);
   font-size: 0.95rem;
@@ -167,20 +157,19 @@ main {
   padding: 0.4rem 0.75rem;
   text-align: center;
   width: 100%;
-  border-radius: 999px;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
 }
 
 .person-sidebar button:hover {
   color: var(--color-text);
-  border-color: var(--color-text);
+  background: var(--color-sidebar-hover);
 }
 
 .person-sidebar button.active {
-  color: var(--color-bg);
+  color: var(--color-text);
   font-weight: bold;
-  background: var(--color-text);
-  border-color: var(--color-text);
+  background: var(--color-sidebar-active);
 }
 
 /* Tab Toggle (Dictionary / FAQ) */
@@ -466,10 +455,6 @@ h2 {
     padding-top: 0.75rem;
   }
 
-  .person-sidebar-label {
-    display: none;
-  }
-
   .person-sidebar ul {
     flex-direction: row;
     overflow-x: auto;
@@ -481,6 +466,8 @@ h2 {
     white-space: nowrap;
     padding: 0.35rem 0.75rem;
     font-size: 0.85rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
   }
 
   .person-sidebar button.active {
