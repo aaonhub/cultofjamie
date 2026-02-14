@@ -24,8 +24,8 @@
   /* Position the tooltip */
   position: absolute;
   z-index: 1;
-  bottom: 125%;
-  /* Position above */
+  top: 125%;
+  /* Position below */
   left: 50%;
   transform: translateX(-50%);
 
@@ -43,7 +43,7 @@
 .theme-toggle-wrapper:hover .theme-tooltip {
   visibility: visible;
   opacity: 1;
-  transform: translateX(-50%) translateY(-2px);
+  transform: translateX(-50%) translateY(2px);
 }
 
 :root {
