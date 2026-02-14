@@ -1,18 +1,28 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 export default function ThemeToggle() {
-  const [dark, setDark] = useState(false)
+  const [dark, setDark] = useState(true)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
     const saved = localStorage.getItem('theme')
-    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    if (saved === 'light') {
+      setDark(false)
+      document.documentElement.classList.remove('dark')
+    } else {
       setDark(true)
       document.documentElement.classList.add('dark')
     }
+  }, [])
+
+  const flashbang = useCallback(() => {
+    const overlay = document.createElement('div')
+    overlay.className = 'flashbang-overlay'
+    document.body.appendChild(overlay)
+    overlay.addEventListener('animationend', () => overlay.remove())
   }, [])
 
   function toggle() {
@@ -22,6 +32,7 @@ export default function ThemeToggle() {
       document.documentElement.classList.add('dark')
       localStorage.setItem('theme', 'dark')
     } else {
+      flashbang()
       document.documentElement.classList.remove('dark')
       localStorage.setItem('theme', 'light')
     }
