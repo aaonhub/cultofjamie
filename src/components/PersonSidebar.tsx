@@ -13,6 +13,7 @@ export default function PersonSidebar({
 }: PersonSidebarProps) {
   return (
     <aside className="person-sidebar">
+      <span className="person-sidebar-label">Viewing</span>
       <ul>
         {people.map((person) => (
           <li key={person}>
