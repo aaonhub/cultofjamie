@@ -336,6 +336,23 @@ h2 {
   font-weight: bold;
   margin-bottom: 0.5rem;
   color: var(--color-text);
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  user-select: none;
+}
+
+.faq-chevron {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  font-size: 1.2em;
+  flex-shrink: 0;
+  width: 0.7em;
+  color: var(--color-muted);
+}
+
+.faq-chevron.expanded {
+  transform: rotate(90deg);
 }
 
 .faq-answer {
