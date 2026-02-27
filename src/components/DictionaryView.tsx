@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Term } from '@/lib/types'
 
 interface DictionaryViewProps {
@@ -17,7 +18,12 @@ export default function DictionaryView({
   focusedId,
   onFocus,
 }: DictionaryViewProps) {
+  const [expandedId, setExpandedId] = useState<string | null>(focusedId)
   const query = search.toLowerCase().trim()
+
+  useEffect(() => {
+    if (focusedId) setExpandedId(focusedId)
+  }, [focusedId])
 
   const filteredTerms = terms.filter((t) => {
     if (!query) return true
@@ -32,57 +38,49 @@ export default function DictionaryView({
     a.name.localeCompare(b.name)
   )
 
+  function toggleExpand(id: string) {
+    setExpandedId((prev) => (prev === id ? null : id))
+    onFocus(id)
+  }
+
   return (
     <>
       <section>
-        {sortedTerms.map((term) => (
-          <TermEntry
-            key={term.id}
-            id={term.id}
-            name={term.name}
-            definition={term.definitions[selectedPerson] || ''}
-            selectedPerson={selectedPerson}
-            focused={focusedId === term.id}
-            onFocus={onFocus}
-          />
-        ))}
+        {sortedTerms.map((term) => {
+          const definition = term.definitions[selectedPerson] || ''
+          const isExpanded = expandedId === term.id
+          const firstLine = definition.split('\n')[0] || ''
+          const hasMore = definition.includes('\n') && definition.split('\n').length > 1
+
+          return (
+            <div
+              key={term.id}
+              id={term.id}
+              className={`term-entry${isExpanded ? ' term-expanded' : ''}${focusedId === term.id ? ' entry-focused' : ''}`}
+              onClick={() => toggleExpand(term.id)}
+            >
+              <span className="term-name">{term.name}</span>
+              <span
+                key={selectedPerson}
+                className={`term-preview fade-in${!definition ? ' term-empty' : ''}`}
+              >
+                {firstLine || 'No definition yet.'}
+              </span>
+              {hasMore && (
+                <div className="term-detail-wrapper" aria-hidden={!isExpanded}>
+                  <span className="term-definition fade-in">
+                    {definition.split('\n').slice(1).join('\n')}
+                  </span>
+                </div>
+              )}
+            </div>
+          )
+        })}
       </section>
 
       {sortedTerms.length === 0 && query && (
         <p className="no-content">No terms matching &ldquo;{search}&rdquo;</p>
       )}
     </>
-  )
-}
-
-function TermEntry({
-  id,
-  name,
-  definition,
-  selectedPerson,
-  focused,
-  onFocus,
-}: {
-  id: string
-  name: string
-  definition: string
-  selectedPerson: string
-  focused: boolean
-  onFocus: (id: string) => void
-}) {
-  return (
-    <div
-      className={`term-entry${focused ? ' entry-focused' : ''}`}
-      id={id}
-      onClick={() => onFocus(id)}
-    >
-      <span className="term-name">{name}</span>
-      <span
-        key={selectedPerson}
-        className={`term-definition fade-in${!definition ? ' term-empty' : ''}`}
-      >
-        {definition || 'No definition yet.'}
-      </span>
-    </div>
   )
 }

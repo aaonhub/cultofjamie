@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { FAQEntry } from '@/lib/types'
 
 interface FAQViewProps {
@@ -17,7 +18,12 @@ export default function FAQView({
   focusedId,
   onFocus,
 }: FAQViewProps) {
+  const [expandedId, setExpandedId] = useState<string | null>(focusedId)
   const query = search.toLowerCase().trim()
+
+  useEffect(() => {
+    if (focusedId) setExpandedId(focusedId)
+  }, [focusedId])
 
   const filteredFAQs = faqEntries.filter((faq) => {
     if (!query) return true
@@ -28,24 +34,32 @@ export default function FAQView({
     )
   })
 
+  function toggleExpand(id: string) {
+    setExpandedId((prev) => (prev === id ? null : id))
+    onFocus(id)
+  }
+
   return (
     <div className="faq-content">
       {filteredFAQs.map((faq) => {
         const answer = faq.answers[selectedPerson] || ''
+        const isExpanded = expandedId === faq.id
         return (
           <div
             key={faq.id}
             id={faq.id}
-            className={`faq-entry${focusedId === faq.id ? ' entry-focused' : ''}`}
-            onClick={() => onFocus(faq.id)}
+            className={`faq-entry${isExpanded ? ' faq-expanded' : ''}${focusedId === faq.id ? ' entry-focused' : ''}`}
+            onClick={() => toggleExpand(faq.id)}
           >
             <h3 className="faq-question">{faq.question}</h3>
-            <p
-              key={selectedPerson}
-              className={`faq-answer fade-in${!answer ? ' faq-empty' : ''}`}
-            >
-              {answer || 'No answer yet.'}
-            </p>
+            <div className="faq-answer-wrapper" aria-hidden={!isExpanded}>
+              <p
+                key={selectedPerson}
+                className={`faq-answer fade-in${!answer ? ' faq-empty' : ''}`}
+              >
+                {answer || 'No answer yet.'}
+              </p>
+            </div>
           </div>
         )
       })}

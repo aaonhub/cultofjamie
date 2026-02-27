@@ -277,15 +277,15 @@ h2 {
   font-weight: normal;
 }
 
-/* Focused entry (shared between dictionary + FAQ) */
+/* Shared entry styles (dictionary + FAQ) */
 .term-entry,
 .faq-entry {
   cursor: pointer;
-  border-radius: 6px;
-  padding: 0.75rem;
-  margin-left: -0.75rem;
-  margin-right: -0.75rem;
-  transition: background 0.15s;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.5rem;
+  background: var(--color-bg);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .term-entry:hover,
@@ -293,32 +293,55 @@ h2 {
   background: var(--color-sidebar-hover);
 }
 
-.entry-focused {
+.term-expanded,
+.faq-expanded {
   background: var(--color-sidebar-active);
-  border-left: 3px solid var(--color-text);
-  padding-left: calc(0.75rem - 3px);
 }
 
-.entry-focused:hover {
+.entry-focused {
   background: var(--color-sidebar-active);
 }
 
 /* Dictionary Term Entries */
-.term-entry {
-  margin-bottom: 0.5rem;
-}
-
 .term-name {
   font-weight: bold;
   font-size: 1.15rem;
   display: block;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.25rem;
 }
 
-.term-definition {
+.term-preview {
+  display: block;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.term-detail-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease;
+  opacity: 0;
+}
+
+.term-expanded .term-detail-wrapper {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.term-detail-wrapper > .term-definition {
+  overflow: hidden;
   display: block;
   color: var(--color-muted);
   white-space: pre-wrap;
+  line-height: 1.6;
+  padding-top: 0;
+  transition: padding-top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.term-expanded .term-detail-wrapper > .term-definition {
+  padding-top: 0.5rem;
 }
 
 .term-empty {
@@ -327,15 +350,34 @@ h2 {
 }
 
 /* FAQ Entries */
-.faq-entry {
-  margin-bottom: 0.5rem;
-}
-
 .faq-question {
   font-size: 1.05rem;
   font-weight: bold;
-  margin-bottom: 0.5rem;
   color: var(--color-text);
+  margin: 0;
+}
+
+.faq-answer-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease;
+  opacity: 0;
+}
+
+.faq-expanded .faq-answer-wrapper {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.faq-answer-wrapper > .faq-answer {
+  overflow: hidden;
+  padding-top: 0;
+  transition: padding-top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-expanded .faq-answer-wrapper > .faq-answer {
+  padding-top: 0.75rem;
 }
 
 .faq-answer {
