@@ -352,38 +352,28 @@ h2 {
 /* FAQ Entries */
 .faq-question {
   font-size: 1.05rem;
-  font-weight: bold;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0;
 }
 
-.faq-answer-wrapper {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.3s ease;
-  opacity: 0;
-}
-
-.faq-expanded .faq-answer-wrapper {
-  grid-template-rows: 1fr;
-  opacity: 1;
-}
-
-.faq-answer-wrapper > .faq-answer {
-  overflow: hidden;
-  padding-top: 0;
-  transition: padding-top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.faq-expanded .faq-answer-wrapper > .faq-answer {
-  padding-top: 0.75rem;
-}
-
 .faq-answer {
   color: var(--color-muted);
-  line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0.4rem 0 0;
   white-space: pre-wrap;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-height: 3em;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-answer-expanded {
+  -webkit-line-clamp: unset;
+  display: block;
 }
 
 .faq-empty {
