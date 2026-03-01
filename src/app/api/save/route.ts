@@ -1,21 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Octokit } from '@octokit/rest'
 import { Dictionary } from '@/lib/types'
+import { verifySessionToken } from '@/lib/session'
 
 function getAuth(request: NextRequest): { person: string; role: 'master' | 'person' } | null {
   const session = request.cookies.get('admin-session')?.value
   if (!session) return null
 
+  const result = verifySessionToken(session)
+  if (!result) return null
+
+  if (result.person === '_master') {
+    return { person: '_master', role: 'master' }
+  }
+
+  // Verify person exists in passwords config
   const passwordsRaw = process.env.ADMIN_PASSWORDS
   if (!passwordsRaw) return null
 
   try {
     const passwords: Record<string, string> = JSON.parse(passwordsRaw)
-    if (session === '_master' && passwords._master) {
-      return { person: '_master', role: 'master' }
-    }
-    if (session in passwords && session !== '_master') {
-      return { person: session, role: 'person' }
+    if (result.person in passwords && result.person !== '_master') {
+      return { person: result.person, role: 'person' }
     }
   } catch {
     return null

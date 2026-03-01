@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createSessionToken } from '@/lib/session'
 
 export async function POST(request: NextRequest) {
   const { password } = await request.json()
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
   // Check for master password first
   if (passwords._master && password === passwords._master) {
     const response = NextResponse.json({ success: true, person: '_master', role: 'master' })
-    response.cookies.set('admin-session', '_master', {
+    response.cookies.set('admin-session', createSessionToken('_master'), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
 
   const response = NextResponse.json({ success: true, person, role: 'person' })
 
-  response.cookies.set('admin-session', person, {
+  response.cookies.set('admin-session', createSessionToken(person), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
